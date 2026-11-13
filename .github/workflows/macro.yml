@@ -1,0 +1,36 @@
+# Bản tin vĩ mô 21:00 thứ 2-6. 13:45 UTC = 20:45 VN, script tự chờ tới 21:00.
+name: Macro Report
+
+on:
+  schedule:
+    - cron: "45 13 * * 1-5"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  report:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - run: pip install requests tzdata
+      - name: Gửi bản tin
+        env:
+          TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+          TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
+          FRED_API_KEY: ${{ secrets.FRED_API_KEY }}
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+          AI_MODEL: ${{ vars.AI_MODEL }}
+        run: python macro_report.py
+      - name: Lưu lịch sử nhận định
+        run: |
+          git config user.name "stock-bot"
+          git config user.email "stock-bot@users.noreply.github.com"
+          git add predictions.json
+          git commit -m "Nhận định $(TZ=Asia/Ho_Chi_Minh date +%F)" || echo "Không có thay đổi"
+          git pull --rebase && git push
