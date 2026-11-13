@@ -433,9 +433,13 @@ def fmt(label, x, kind, common_asof=None):
     return f"{label} {x['last']:,.2f} ({x['pct']:+.2f}%){asof}"
 
 
+DRY_RUN = os.getenv("DRY_RUN") == "1"   # chế độ xem trước: in ra log, không gửi Telegram, không lưu nhận định
+
+
 def send(text):
     """Gửi HTML, tự tách tin theo dòng nếu dài quá giới hạn Telegram."""
-    if not TOKEN or not CHAT_ID:
+    if DRY_RUN or not TOKEN or not CHAT_ID:
+        print("===== XEM TRƯỚC BẢN TIN =====")
         print(text)
         return
     import re
@@ -506,8 +510,9 @@ def main():
     preds = load_preds()
     check = check_yesterday(preds, vni)
     preds[today.isoformat()] = {"label": label, "score": pts}
-    with open(PRED_FILE, "w", encoding="utf-8") as f:
-        json.dump(preds, f, ensure_ascii=False, indent=1)
+    if not DRY_RUN:
+        with open(PRED_FILE, "w", encoding="utf-8") as f:
+            json.dump(preds, f, ensure_ascii=False, indent=1)
     trend = [preds[k]["score"] for k in sorted(preds)[-5:]]
 
     # ---------- 2. Tóm tắt đầu tin ----------
