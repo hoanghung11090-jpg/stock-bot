@@ -35,10 +35,29 @@ AI_MODEL = os.getenv("AI_MODEL", "") or "claude-haiku-4-5"
 PRED_FILE = "predictions.json"
 HEADERS = {"User-Agent": "Mozilla/5.0"}
 
-# Sự kiện tự thêm (ngày, mô tả). Ví dụ họp Fed, công bố PMI, CPI Mỹ...
+# Sự kiện tự thêm (ngày, mô tả). Ví dụ công bố PMI Việt Nam...
 EVENTS = [
     # ("2026-12-01", "PMI sản xuất Việt Nam (S&P Global)"),
 ]
+
+# Lịch Mỹ chính thức (giờ New York). Nguồn: federalreserve.gov (FOMC), bls.gov (CPI, NFP), bea.gov (PCE).
+# Cập nhật khi hết danh sách: bot sẽ nhắc "cần cập nhật lịch".
+US_CAL = {
+    "Fed công bố lãi suất (FOMC)": ("14:00", ["2026-12-09", "2027-01-27", "2027-03-17", "2027-04-28", "2027-06-09",
+                                             "2027-07-28", "2027-09-15", "2027-10-27", "2027-12-08"]),
+    "CPI Mỹ": ("08:30", ["2026-12-10", "2027-01-13", "2027-02-11", "2027-03-10", "2027-04-13", "2027-05-12",
+                         "2027-06-10", "2027-07-14", "2027-08-11", "2027-09-14", "2027-10-14", "2027-11-10",
+                         "2027-12-10"]),
+    "Non-farm Payrolls": ("08:30", ["2026-12-04", "2027-01-08", "2027-02-05", "2027-03-05", "2027-04-02",
+                                    "2027-05-07", "2027-06-04", "2027-07-02", "2027-08-06", "2027-09-03",
+                                    "2027-10-08", "2027-11-05", "2027-12-03"]),
+    "Core PCE": ("08:30", ["2026-11-25", "2026-12-23"]),
+}
+NY = ZoneInfo("America/New_York")
+
+# Lãi suất huy động 12 tháng: thay đổi chậm, cập nhật tay khi có biến động (nguồn: bảng lãi suất CafeF).
+DEPOSIT_12M = {"updated": "2026-11-12", "big4": 6.8, "max_private": 7.0,
+               "max_private_banks": "MBV, PGBank, Sacombank, VCBNeo, VIB"}
 
 # (nhãn, mã Yahoo Finance, kiểu hiển thị)
 MARKETS = {
@@ -109,6 +128,29 @@ def fred(series, units="lin"):
         return None
 
 
+def vn_money_market():
+    """
+    Lãi suất qua đêm liên ngân hàng + bơm/hút ròng OMO của NHNN.
+    NHNN không có API; lấy từ tiêu đề tin phiên OMO hằng ngày của Người Quan Sát
+    (dạng "Phiên 12/11: Ngân hàng Nhà nước hút ròng 447 tỷ đồng, lãi suất neo mức 4,3%").
+    """
+    import re
+    try:
+        html = requests.get("https://nguoiquansat.vn/omo-ptag.html", headers=HEADERS, timeout=15).text
+    except requests.RequestException as e:
+        print("Lỗi lấy lãi suất VN:", e)
+        return None
+    for title in re.findall(r"Phiên \d{1,2}/\d{1,2}[^<>\"]{10,220}", html):
+        m = re.search(r"Phiên (\d{1,2}/\d{1,2}).*?(hút|bơm) ròng (?:hơn |gần |khoảng )?([\d.,]+) tỷ", title)
+        r = re.search(r"qua đêm[^%]*?(\d+(?:,\d+)?)%|lãi suất[^%]*?(\d+(?:,\d+)?)%", title)
+        if m:
+            rate = (r.group(1) or r.group(2)).replace(",", ".") if r else None
+            return {"session": m.group(1), "omo": m.group(2), "omo_bn": m.group(3),
+                    "overnight": float(rate) if rate else None}
+    print("Không tìm thấy tin OMO")
+    return None
+
+
 # ===================== LỊCH SỰ KIỆN =====================
 def third_thursday(y, m):
     d = date(y, m, 1)
@@ -122,14 +164,24 @@ def first_friday(y, m):
 
 
 def upcoming_events(today, days=7):
-    """Sự kiện trong `days` ngày tới: đáo hạn phái sinh VN30 (thứ 5 tuần 3), NFP dự kiến (thứ 6 đầu tháng)."""
+    """Sự kiện VN trong `days` ngày tới: đáo hạn phái sinh VN30 (thứ 5 tuần 3) + danh sách EVENTS."""
     out = []
     for k in range(2):
         y, m = (today.year + (today.month + k - 1) // 12, (today.month + k - 1) % 12 + 1)
         out.append((third_thursday(y, m), "Đáo hạn phái sinh VN30"))
-        out.append((first_friday(y, m), "Non-farm Payrolls Mỹ (dự kiến, công bố tối giờ VN)"))
     out += [(date.fromisoformat(d), t) for d, t in EVENTS]
     return sorted((d, t) for d, t in out if today < d <= today + timedelta(days=days))
+
+
+def us_events(now):
+    """Lần công bố kế tiếp của từng sự kiện Mỹ, đổi sang giờ Việt Nam."""
+    out = []
+    for name, (hhmm, days) in US_CAL.items():
+        h, mi = map(int, hhmm.split(":"))
+        nxt = [datetime.fromisoformat(d).replace(hour=h, minute=mi, tzinfo=NY).astimezone(TZ) for d in days]
+        nxt = [t for t in nxt if t > now]
+        out.append((nxt[0] if nxt else None, name))
+    return sorted(out, key=lambda x: (x[0] is None, x[0] or now))
 
 
 # ===================== NHIỆT KẾ (QUY TẮC CỐ ĐỊNH) =====================
@@ -163,6 +215,9 @@ def score(data):
         add(a <= -1, -1, "Châu Á giảm đồng loạt")
     add(g("USD/VND").get("pct", 0) >= 0.3, -1, "Tỷ giá USD/VND tăng nhanh")
     add(g("USD/CNY").get("pct", 0) >= 0.5, -1, "Nhân dân tệ mất giá")
+    mm = data.get("VN_money_market") or {}
+    add((mm.get("overnight") or 0) >= 5, -1, "Lãi suất qua đêm ≥ 5% (thanh khoản hệ thống căng)")
+    add(mm.get("omo") == "bơm", +1, "NHNN bơm ròng qua OMO")
     vni = g("VNINDEX")
     if vni:
         add(vni["last"] > vni["ma20"], +1, "VN-Index trên MA20 (xu hướng ngắn hạn tốt)")
@@ -271,6 +326,30 @@ def main():
         vol = f", KL {vni['vol_vs_avg']:.1f}x TB20" if vni["vol_vs_avg"] else ""
         lines += ["🇻🇳 Việt Nam", f"  VN-Index: {vni['last']:,.2f} ({vni['pct']:+.2f}%), {pos} MA20 {vni['ma20']:,.0f}{vol}", ""]
 
+    mm = vn_money_market()
+    data["VN_money_market"] = mm
+    data["VN_deposit_12m"] = DEPOSIT_12M
+    lines.append("🏦 Lãi suất VN")
+    if mm:
+        on = f"{mm['overnight']:.2f}%" if mm["overnight"] is not None else "n/a"
+        lines.append(f"  Qua đêm liên NH: {on} (tin phiên {mm['session']})")
+        lines.append(f"  OMO phiên {mm['session']}: NHNN {mm['omo']} ròng {mm['omo_bn']} tỷ")
+    else:
+        lines.append("  Qua đêm liên NH: chưa lấy được")
+    d = DEPOSIT_12M
+    lines.append(f"  Huy động 12T: Big4 {d['big4']}%, cao nhất {d['max_private']}% (cập nhật {d['updated'][8:]}/{d['updated'][5:7]})")
+    lines.append("")
+
+    thu = ["T2", "T3", "T4", "T5", "T6", "T7", "CN"]
+    lines.append("🇺🇸 Lịch sự kiện Mỹ (giờ VN)")
+    for t, name in us_events(now):
+        if t is None:
+            lines.append(f"  {name}: cần cập nhật lịch")
+            continue
+        soon = " ⚠️" if t - now <= timedelta(days=7) else ""
+        lines.append(f"  {thu[t.weekday()]} {t:%d/%m %H:%M}: {name}{soon}")
+    lines.append("")
+
     if FRED_KEY:
         pce = fred("PCEPILFE", "pc1")
         nfp = fred("PAYEMS", "chg")
@@ -284,8 +363,7 @@ def main():
 
     ev = upcoming_events(today)
     if ev:
-        lines.append("🗓 Sự kiện 7 ngày tới")
-        thu = ["T2", "T3", "T4", "T5", "T6", "T7", "CN"]
+        lines.append("🗓 Sự kiện VN 7 ngày tới")
         lines += [f"  {thu[d.weekday()]} {d:%d/%m}: {t}" for d, t in ev]
         lines.append("")
 
