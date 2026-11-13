@@ -18,11 +18,14 @@ Chạy:  set TELEGRAM_BOT_TOKEN=...  &  set TELEGRAM_CHAT_ID=...  &  python stoc
 import json
 import os
 import statistics
+import sys
 import time
 from datetime import datetime, timedelta
 from zoneinfo import ZoneInfo
 
 import requests
+
+sys.stdout.reconfigure(line_buffering=True)   # log hiện ngay trên GitHub Actions
 
 # ===================== CẤU HÌNH =====================
 SYMBOLS = ["VPB", "VPX", "TCB", "MBB", "SSI"]
@@ -229,11 +232,20 @@ def run_github_shift():
     if datetime.now(TZ).weekday() >= 5:
         print("Cuối tuần, thoát.")
         return
+    announced = False
     while True:
         now = datetime.now(TZ)
         t = (now.hour, now.minute)
         if in_session(now):
             scan(now)
+            if not announced:                       # tin báo bot còn sống, 1 lần mỗi ca
+                announced = True
+                if latest:
+                    body = "\n".join(f"{s}: {a['price']:,.0f} ({a['pct']:+.2f}%)" for s, a in latest.items())
+                    send(f"Bot bắt đầu ca {now:%H:%M}\n{body}")
+                else:
+                    send(f"Bot bắt đầu ca {now:%H:%M} nhưng CHƯA lấy được dữ liệu (nguồn lỗi hoặc ngày nghỉ)")
+            print(now.strftime("%H:%M:%S"), {s: round(a["pct"], 2) for s, a in latest.items()})
             time.sleep(POLL_SECONDS)
         elif t >= (15, 5):                          # chốt phiên
             scan(now, notify=False)
