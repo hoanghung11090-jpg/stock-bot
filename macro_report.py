@@ -64,7 +64,7 @@ MARKETS = {
     "us": [("DXY", "DX-Y.NYB", "idx"), ("US10Y", "^TNX", "yield"), ("VIX", "^VIX", "idx"),
            ("S&P 500", "^GSPC", "idx"), ("Nasdaq", "^IXIC", "idx"), ("S&P fut (tối nay)", "ES=F", "idx")],
     "asia": [("Nikkei", "^N225", "idx"), ("KOSPI", "^KS11", "idx"), ("Hang Seng", "^HSI", "idx"),
-             ("Brent", "BZ=F", "usd"), ("WTI", "CL=F", "usd"), ("Vàng", "GC=F", "usd")],
+             ("Brent", "BZ=F", "usd"), ("WTI", "CL=F", "usd"), ("Vàng (HĐTL)", "GC=F", "usd")],
     "fx": [("USD/VND", "VND=X", "fx"), ("USD/CNY", "CNY=X", "fx")],
 }
 
@@ -93,7 +93,9 @@ def yahoo(symbol):
             closes = [c for c in res["indicators"]["quote"][0]["close"] if c is not None]
             last = res["meta"].get("regularMarketPrice") or closes[-1]
             prev = closes[-2] if closes[-1] == last else closes[-1]
-            return {"last": last, "chg": last - prev, "pct": (last / prev - 1) * 100}
+            ts = res["meta"].get("regularMarketTime") or res["timestamp"][-1]
+            asof = datetime.fromtimestamp(ts, ZoneInfo(res["meta"].get("exchangeTimezoneName") or "UTC"))
+            return {"last": last, "chg": last - prev, "pct": (last / prev - 1) * 100, "asof": asof.strftime("%d/%m")}
         except (TypeError, KeyError, IndexError, ZeroDivisionError):
             continue
     return None
@@ -103,12 +105,14 @@ def vnindex():
     """VN-Index từ VNDirect: điểm, % ngày, vị trí so với MA20."""
     now = int(time.time())
     d = get_json("https://dchart-api.vndirect.com.vn/dchart/history",
-                 {"resolution": "D", "symbol": "VNINDEX", "from": now - 86400 * 60, "to": now})
+                 {"resolution": "D", "symbol": "VNINDEX", "from": now - 86400 * 110, "to": now})
     if not d or d.get("s") != "ok":
         return None
     c, v = d["c"], d["v"]
     ma20 = statistics.mean(c[-20:])
     return {"last": c[-1], "pct": (c[-1] / c[-2] - 1) * 100, "ma20": ma20,
+            "ma50": statistics.mean(c[-50:]) if len(c) >= 50 else None,
+            "pct5": (c[-1] / c[-6] - 1) * 100 if len(c) >= 6 else None,
             "vol_vs_avg": v[-1] / statistics.mean(v[-21:-1]) if len(v) > 21 else None,
             "date": datetime.fromtimestamp(d["t"][-1], TZ).date().isoformat()}
 
@@ -221,6 +225,16 @@ def watchlist_news(items, limit=10):
     return out[:limit]
 
 
+def foreign_flow_from(items):
+    """Tìm số liệu khối ngoại mua/bán ròng toàn thị trường trong tiêu đề tin hôm nay (VD: 'Khối ngoại bán ròng 850 tỷ')."""
+    import re
+    for when, title, link in items:
+        m = re.search(r"khối ngoại (mua|bán) ròng (?:hơn |gần |khoảng )?([\d.,]+) (tỷ|triệu usd)", title.lower())
+        if m and not re.search(r"\b(vpb|vpx|tcb|mbb|ssi|cổ phiếu [a-z]{3})\b", title.lower()):
+            return {"side": m.group(1), "amount": m.group(2), "unit": m.group(3), "title": title, "time": when}
+    return None
+
+
 def policy_news_from(items, limit=8):
     """Lọc tin chính sách/vĩ mô theo từ khoá."""
     return [(w, t, l) for w, t, l in items
@@ -326,7 +340,17 @@ def score(data):
     mm = data.get("VN_money_market") or {}
     add((mm.get("overnight") or 0) >= 5, -1, "Lãi suất qua đêm ≥ 5% (thanh khoản hệ thống căng)")
     add(mm.get("omo") == "bơm", +1, "NHNN bơm ròng qua OMO")
+    ff = data.get("foreign_flow_market") or {}
+    try:
+        amt = float(ff.get("amount", "0").replace(".", "").replace(",", ".")) if ff.get("unit") == "tỷ" else 0
+    except ValueError:
+        amt = 0
+    add(ff.get("side") == "bán" and amt >= 500, -1, "Khối ngoại bán ròng mạnh (≥ 500 tỷ)")
+    add(ff.get("side") == "mua" and amt >= 500, +1, "Khối ngoại mua ròng mạnh (≥ 500 tỷ)")
     vni = g("VNINDEX")
+    if vni and vni.get("ma50"):
+        add(vni["ma20"] > vni["ma50"] and vni["last"] > vni["ma50"], +1, "Xu hướng trung hạn tăng (MA20 > MA50)")
+        add(vni["ma20"] < vni["ma50"] and vni["last"] < vni["ma50"], -1, "Xu hướng trung hạn giảm (MA20 < MA50)")
     if vni:
         add(vni["last"] > vni["ma20"], +1, "VN-Index trên MA20 (xu hướng ngắn hạn tốt)")
         add(vni["last"] < vni["ma20"], -1, "VN-Index dưới MA20")
@@ -389,23 +413,43 @@ def check_yesterday(preds, vni):
 
 
 # ===================== TIN NHẮN =====================
-def fmt(label, x, kind):
+def esc(t):
+    """Escape cho Telegram HTML."""
+    return str(t).replace("&", "&amp;").replace("<", "&lt;").replace(">", "&gt;")
+
+
+def fmt(label, x, kind, common_asof=None):
+    """Một dòng chỉ số: tên, giá trị, thay đổi; ghi ngày nếu khác ngày chung của nhóm."""
     if not x:
-        return f"{label}: n/a"
+        return f"{label}: <i>n/a</i>"
+    asof = f" <i>({x['asof']})</i>" if x.get("asof") and x.get("asof") != common_asof else ""
     if kind == "yield":
-        return f"{label}: {x['last']:.2f}% ({x['chg'] * 100:+.0f}bp)"
-    if kind == "fx":
-        return f"{label}: {x['last']:,.2f} ({x['pct']:+.2f}%)"
-    return f"{label}: {x['last']:,.2f} ({x['pct']:+.2f}%)"
+        return f"{label} {x['last']:.2f}% ({x['chg'] * 100:+.0f}bp){asof}"
+    return f"{label} {x['last']:,.2f} ({x['pct']:+.2f}%){asof}"
 
 
 def send(text):
+    """Gửi HTML, tự tách tin theo dòng nếu dài quá giới hạn Telegram."""
     if not TOKEN or not CHAT_ID:
         print(text)
         return
-    for chunk in [text[i:i + 3900] for i in range(0, len(text), 3900)]:
+    chunks, cur = [], ""
+    for line in text.split("\n"):
+        if len(cur) + len(line) > 3800:
+            chunks.append(cur)
+            cur = ""
+        cur += line + "\n"
+    chunks.append(cur)
+    for c in chunks:
         r = requests.post(f"https://api.telegram.org/bot{TOKEN}/sendMessage", timeout=15,
-                          json={"chat_id": CHAT_ID, "text": chunk, "disable_web_page_preview": True})
+                          json={"chat_id": CHAT_ID, "text": c, "parse_mode": "HTML",
+                                "disable_web_page_preview": True})
+        if r.status_code != 200:   # lỗi định dạng: gửi lại dạng chữ thường
+            print("HTML lỗi, gửi dạng thường:", r.text[:200])
+            import re
+            plain = re.sub(r"<[^>]+>", "", c).replace("&lt;", "<").replace("&gt;", ">").replace("&amp;", "&")
+            r = requests.post(f"https://api.telegram.org/bot{TOKEN}/sendMessage", timeout=15,
+                              json={"chat_id": CHAT_ID, "text": plain, "disable_web_page_preview": True})
         print("Telegram:", r.status_code)
 
 
@@ -417,109 +461,135 @@ def main():
         now = datetime.now(TZ)
     today = now.date()
     friday = now.weekday() == 4
-    horizon = "tuần giao dịch tới" if friday else "phiên giao dịch ngày mai"
+    horizon = "tuần tới" if friday else "phiên mai"
+    thu = ["T2", "T3", "T4", "T5", "T6", "T7", "CN"]
 
-    data, lines = {}, [f"📊 BẢN TIN VĨ MÔ {now:%d/%m/%Y} 21:00", ""]
-    for title, key in (("🇺🇸 Mỹ", "us"), ("🌏 Châu Á & hàng hoá", "asia"), ("💱 Tỷ giá", "fx")):
-        lines.append(title)
+    # ---------- 1. Thu thập dữ liệu ----------
+    data, missing = {}, []
+    for key in MARKETS:
         for label, sym, kind in MARKETS[key]:
-            x = yahoo(sym)
-            data[label] = x
-            lines.append("  " + fmt(label, x, kind))
+            data[label] = yahoo(sym)
+            if not data[label]:
+                missing.append(label)
             time.sleep(0.5)
-        lines.append("")
-
     vni = vnindex()
     data["VNINDEX"] = vni
-    if vni:
-        pos = "trên" if vni["last"] > vni["ma20"] else "dưới"
-        vol = f", KL {vni['vol_vs_avg']:.1f}x TB20" if vni["vol_vs_avg"] else ""
-        lines += ["🇻🇳 Việt Nam", f"  VN-Index: {vni['last']:,.2f} ({vni['pct']:+.2f}%), {pos} MA20 {vni['ma20']:,.0f}{vol}", ""]
-
+    if not vni:
+        missing.append("VN-Index")
     mm = vn_money_market()
     data["VN_money_market"] = mm
+    if not mm:
+        missing.append("Lãi suất qua đêm")
     data["VN_deposit_12m"] = DEPOSIT_12M
-    lines.append("🏦 Lãi suất VN")
-    if mm:
-        on = f"{mm['overnight']:.2f}%" if mm["overnight"] is not None else "n/a"
-        lines.append(f"  Qua đêm liên NH: {on} (tin phiên {mm['session']})")
-        lines.append(f"  OMO phiên {mm['session']}: NHNN {mm['omo']} ròng {mm['omo_bn']} tỷ")
-    else:
-        lines.append("  Qua đêm liên NH: chưa lấy được")
-    d = DEPOSIT_12M
-    lines.append(f"  Huy động 12T: Big4 {d['big4']}%, cao nhất {d['max_private']}% (cập nhật {d['updated'][8:]}/{d['updated'][5:7]})")
-    lines.append("")
-
     feed = fetch_feed_items(now)
-    wl = watchlist_news(feed)
+    if not feed:
+        missing.append("Tin tức")
+    wl = watchlist_news(feed, limit=6)
+    news = policy_news_from(feed, limit=5)
+    ff = foreign_flow_from(feed)
+    data["foreign_flow_market"] = ff and {k: ff[k] for k in ("side", "amount", "unit")}
     data["watchlist_news_titles"] = [f"{sym}: {t}" for sym, _, t, _ in wl]
-    lines.append("📌 Tin cổ phiếu danh mục 24h")
-    if wl:
-        for sym, w, t, link in wl:
-            lines.append(f"  • [{sym}] {t}")
-            if link:
-                lines.append(f"    {link}")
-    else:
-        lines.append("  Không có tin mới về VPB, VPX, TCB, MBB, SSI")
-    lines.append("")
-
-    news = policy_news_from(feed)
     data["policy_news_titles"] = [t for _, t, _ in news]
-    lines.append("📰 Tin chính sách & vĩ mô 24h")
-    if news:
-        for w, t, link in news:
-            lines.append(f"  • {w:%H:%M} {t}")
-            if link:
-                lines.append(f"    {link}")
-    else:
-        lines.append("  Không có tin đáng chú ý")
-    lines.append("")
-
-    thu = ["T2", "T3", "T4", "T5", "T6", "T7", "CN"]
-    lines.append("🇺🇸 Lịch sự kiện Mỹ (giờ VN)")
-    for t, name in us_events(now):
-        if t is None:
-            lines.append(f"  {name}: cần cập nhật lịch")
-            continue
-        soon = " ⚠️" if t - now <= timedelta(days=7) else ""
-        lines.append(f"  {thu[t.weekday()]} {t:%d/%m %H:%M}: {name}{soon}")
-    lines.append("")
-
     if FRED_KEY:
-        pce = fred("PCEPILFE", "pc1")
-        nfp = fred("PAYEMS", "chg")
-        data["CorePCE_yoy"], data["NFP_change_k"] = pce, nfp
-        lines.append("📅 Vĩ mô Mỹ (tháng)")
-        if pce:
-            lines.append(f"  Core PCE {pce['date']}: {pce['value']:.2f}% YoY")
-        if nfp:
-            lines.append(f"  NFP {nfp['date']}: {nfp['value']:+,.0f}k việc làm")
-        lines.append("")
-
-    ev = upcoming_events(today)
-    if ev:
-        lines.append("🗓 Sự kiện VN 7 ngày tới")
-        lines += [f"  {thu[d.weekday()]} {d:%d/%m}: {t}" for d, t in ev]
-        lines.append("")
+        data["CorePCE_yoy"], data["NFP_change_k"] = fred("PCEPILFE", "pc1"), fred("PAYEMS", "chg")
+    us_ev = us_events(now)
+    vn_ev = upcoming_events(today)
 
     pts, label, why = score(data)
-    lines.append(f"🌡 Nhiệt kế ({horizon}): {label} ({pts:+d} điểm)")
-    lines += [f"  {w}" for w in why] or ["  Không có tín hiệu nổi bật"]
-
-    view = ai_view(data, pts, label, horizon)
-    if view:
-        lines += ["", "🤖 Nhận định AI", view]
-
     preds = load_preds()
     check = check_yesterday(preds, vni)
-    if check:
-        lines += ["", "🎯 " + check]
     preds[today.isoformat()] = {"label": label, "score": pts}
     with open(PRED_FILE, "w", encoding="utf-8") as f:
         json.dump(preds, f, ensure_ascii=False, indent=1)
+    trend = [preds[k]["score"] for k in sorted(preds)[-5:]]
 
-    lines += ["", "Tham khảo, không phải khuyến nghị đầu tư."]
-    send("\n".join(lines))
+    # ---------- 2. Tóm tắt đầu tin ----------
+    icon = {"Tích cực": "🟢", "Trung tính": "🟡", "Tiêu cực": "🔴"}[label]
+    neg = [w[3:] for w in why if w.startswith("-")]
+    pos = [w[3:] for w in why if w.startswith("+")]
+    soon = [(t, n) for t, n in us_ev if t and t - now <= timedelta(days=7)]
+    soon += [(datetime.combine(d, datetime.min.time(), TZ), n) for d, n in vn_ev]
+    soon.sort()
+    L = [f"<b>📊 BẢN TIN THỊ TRƯỜNG {thu[now.weekday()]} {now:%d/%m/%Y}</b>", "",
+         f"<b>{icon} Nhiệt kế {horizon}: {label} ({pts:+d})</b>"]
+    if pos:
+        L.append(f"Hỗ trợ: {esc('; '.join(pos[:2]))}")
+    if neg:
+        L.append(f"Rủi ro: {esc('; '.join(neg[:2]))}")
+    if soon:
+        t, n = soon[0]
+        L.append(f"Sự kiện gần nhất: {thu[t.weekday()]} {t:%d/%m}" + (f" {t:%H:%M}" if t.hour else "") + f" – {esc(n)}")
+    if wl:
+        L.append(f"Tin danh mục: {', '.join(sorted({s for s, *_ in wl}))}")
+    if len(trend) > 1:
+        L.append(f"Điểm 5 phiên: {' → '.join(f'{x:+d}' for x in trend)}")
+    if len(missing) >= 3:
+        L.append(f"⚠️ Thiếu dữ liệu: {esc(', '.join(missing))}")
+
+    view = ai_view(data, pts, label, "tuần giao dịch tới" if friday else "phiên giao dịch ngày mai")
+    if view:
+        L += ["", "<b>🤖 Nhận định AI</b>", esc(view)]
+
+    # ---------- 3. Việt Nam ----------
+    L += ["", "<b>🇻🇳 VIỆT NAM</b>"]
+    if vni:
+        trend_txt = "trên" if vni["last"] > vni["ma20"] else "dưới"
+        ma50 = f", MA50 {vni['ma50']:,.0f}" if vni.get("ma50") else ""
+        L.append(f"VN-Index {vni['last']:,.2f} ({vni['pct']:+.2f}%) <i>({vni['date'][8:]}/{vni['date'][5:7]})</i>")
+        p5 = f"5 phiên {vni['pct5']:+.1f}% · " if vni.get("pct5") is not None else ""
+        vol = f" · KL {vni['vol_vs_avg']:.1f}x TB20" if vni.get("vol_vs_avg") else ""
+        L.append(f"  {p5}{trend_txt} MA20 {vni['ma20']:,.0f}{ma50}{vol}")
+    if ff:
+        L.append(f"Khối ngoại {ff['side']} ròng {ff['amount']} {ff['unit']} <i>({ff['time']:%d/%m})</i>")
+    if mm:
+        on = f"{mm['overnight']:.2f}%" if mm["overnight"] is not None else "n/a"
+        L.append(f"Qua đêm liên NH {on} · OMO NHNN {mm['omo']} ròng {mm['omo_bn']} tỷ <i>(tin {mm['session']})</i>")
+    d = DEPOSIT_12M
+    L.append(f"Huy động 12T: Big4 {d['big4']}% · cao nhất {d['max_private']}% <i>({d['updated'][8:]}/{d['updated'][5:7]})</i>")
+    L.append(fmt("USD/VND", data.get("USD/VND"), "fx") + " · " + fmt("USD/CNY", data.get("USD/CNY"), "fx"))
+
+    # ---------- 4. Quốc tế ----------
+    from collections import Counter
+    kinds = {l: k for grp in MARKETS.values() for l, _, k in grp}
+    dates = Counter(data[l]["asof"] for l in kinds if data.get(l) and data[l].get("asof"))
+    common = dates.most_common(1)[0][0] if dates else None
+    L += ["", f"<b>🌍 QUỐC TẾ</b>" + (f" <i>(số liệu {common})</i>" if common else "")]
+    for title, row in (("Mỹ", ("DXY", "US10Y", "VIX", "S&P 500", "Nasdaq", "S&P fut (tối nay)")),
+                       ("Châu Á", ("Nikkei", "KOSPI", "Hang Seng")), ("Hàng hoá", ("Brent", "WTI", "Vàng (HĐTL)"))):
+        L.append(f"<u>{title}</u>")
+        L += [fmt(l, data.get(l), kinds[l], common) for l in row]
+    if FRED_KEY and data.get("CorePCE_yoy"):
+        pce, nfp = data["CorePCE_yoy"], data.get("NFP_change_k")
+        L.append(f"Core PCE {pce['value']:.2f}% YoY <i>({pce['date']})</i>"
+                 + (f" · NFP {nfp['value']:+,.0f}k <i>({nfp['date']})</i>" if nfp else ""))
+
+    # ---------- 5. Tin tức ----------
+    if wl:
+        L += ["", "<b>📌 TIN DANH MỤC 24H</b>"]
+        L += [f"• <b>{s}</b> <a href=\"{esc(l)}\">{esc(t)}</a>" if l else f"• <b>{s}</b> {esc(t)}" for s, _, t, l in wl]
+    L += ["", "<b>📰 CHÍNH SÁCH & VĨ MÔ 24H</b>"]
+    if news:
+        L += [f"• <a href=\"{esc(l)}\">{esc(t)}</a>" if l else f"• {esc(t)}" for _, t, l in news]
+    else:
+        L.append("Không có tin đáng chú ý")
+
+    # ---------- 6. Lịch & chi tiết nhiệt kế ----------
+    L += ["", "<b>🗓 LỊCH SỰ KIỆN</b>"]
+    for t, n in us_ev:
+        if t is None:
+            L.append(f"{esc(n)}: <i>cần cập nhật lịch</i>")
+        else:
+            flag = "⚠️ " if t - now <= timedelta(days=7) else ""
+            L.append(f"{flag}{thu[t.weekday()]} {t:%d/%m %H:%M} – {esc(n)}")
+    for dd, n in vn_ev:
+        L.append(f"⚠️ {thu[dd.weekday()]} {dd:%d/%m} – {esc(n)}")
+
+    L += ["", "<b>🌡 CHI TIẾT NHIỆT KẾ</b>"]
+    L += [esc(w) for w in why] or ["Không có tín hiệu nổi bật"]
+    if check:
+        L.append("🎯 " + esc(check))
+    L += ["", "<i>Tổng hợp tự động, chỉ để tham khảo, không phải khuyến nghị đầu tư.</i>"]
+    send("\n".join(L))
 
 
 if __name__ == "__main__":
