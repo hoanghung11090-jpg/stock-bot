@@ -218,13 +218,22 @@ def fetch_feed_items(now, hours=24):
     return sorted(items, reverse=True)
 
 
+BANK_NAMES = ["vietcombank", "bidv", "vietinbank", "agribank", "mb", "vpbank", "techcombank", "sacombank",
+              "shb", "hdbank", "acb", "vib", "tpbank", "ocb", "msb", "lpbank"]
+# Tin tổng hợp nhiều ngân hàng (bảng lãi suất, so sánh tiền gửi...) không phải tin riêng của mã
+GENERIC_PATTERNS = [r"lãi suất ngân hàng (ngày|hôm nay)", r"nhận được bao nhiêu", r"gửi tiết kiệm",
+                    r"ngân hàng nào", r"lãi suất tiết kiệm", r"top \d+"]
+
+
 def watchlist_news(items, limit=10):
-    """Tin có nhắc mã/tên doanh nghiệp trong danh mục. Trả về [(mã, thời gian, tiêu đề, link)]."""
+    """Tin riêng về mã trong danh mục. Loại tin tổng hợp nhắc ≥ 3 ngân hàng hoặc bảng lãi suất."""
     import re
     out = []
     for when, title, link in items:
         low = title.lower()
-        if any(k in low for k in NEWS_EXCLUDE):
+        if any(k in low for k in NEWS_EXCLUDE) or any(re.search(p, low) for p in GENERIC_PATTERNS):
+            continue
+        if sum(bool(re.search(rf"\b{b}\b", low)) for b in BANK_NAMES) >= 3:
             continue
         for sym, pats in WATCHLIST_NEWS.items():
             if any(re.search(p, low) for p in pats):
@@ -243,10 +252,25 @@ def foreign_flow_from(items):
     return None
 
 
+# Từ khoá ưu tiên: tin tác động trực tiếp tới thị trường chứng khoán được xếp lên trước
+PRIORITY_KEYWORDS = ["nhnn", "ngân hàng nhà nước", "lãi suất", "tỷ giá", "ủy ban chứng khoán", "ubcknn", "nâng hạng",
+                     "ftse", "msci", "margin", "khối ngoại", "fed", "tín dụng", "omo", "tín phiếu", "vn-index", "cpi"]
+
+
 def policy_news_from(items, limit=8):
-    """Lọc tin chính sách/vĩ mô theo từ khoá."""
-    return [(w, t, l) for w, t, l in items
-            if any(k in t.lower() for k in NEWS_KEYWORDS) and not any(k in t.lower() for k in NEWS_EXCLUDE)][:limit]
+    """Lọc tin chính sách/vĩ mô theo từ khoá, tin có từ khoá ưu tiên xếp trước."""
+    import re
+    picked = []
+    for w, t, l in items:
+        low = t.lower()
+        if not any(k in low for k in NEWS_KEYWORDS) or any(k in low for k in NEWS_EXCLUDE):
+            continue
+        if any(re.search(p, low) for p in GENERIC_PATTERNS):
+            continue
+        prio = sum(k in low for k in PRIORITY_KEYWORDS)
+        picked.append((prio, w, t, l))
+    picked.sort(key=lambda x: (x[0], x[1]), reverse=True)
+    return [(w, t, l) for _, w, t, l in picked][:limit]
 
 
 def policy_news(now, hours=24, limit=8):
@@ -386,7 +410,8 @@ def ai_view(data, pts, label, horizon):
         "Dòng 3 - 'Danh mục:' tác động của tin trong watchlist_news_titles tới mã liên quan (VPB, VPX, TCB, MBB, SSI); "
         "nếu không có tin thì nhận xét chung cho nhóm ngân hàng/chứng khoán.\n"
         "Dòng 4 - 'Sai nếu:' điều kiện làm kịch bản sai.\n"
-        "Quy tắc: không nhắc lại bảng số liệu, không bịa số ngoài JSON, không khuyến nghị mua/bán mã cụ thể."
+        "Quy tắc: không nhắc lại bảng số liệu, không bịa số ngoài JSON, không khẳng định xu hướng (tăng/giảm) "
+        "của chỉ số nào nếu JSON không cho thấy thay đổi đó, không khuyến nghị mua/bán mã cụ thể."
     )
     try:
         r = requests.post("https://api.anthropic.com/v1/messages", timeout=60,
