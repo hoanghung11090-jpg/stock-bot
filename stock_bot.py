@@ -8,7 +8,7 @@ Cảnh báo khi:
   4. Khối lượng cao + giá sập (ưu tiên cao nhất)
 Kèm gợi ý hành động theo quy tắc kỹ thuật (chỉ để tham khảo).
 
-Dữ liệu: API biểu đồ công khai của SSI, dự phòng VNDirect (không cần khoá). Đây là API không
+Dữ liệu: API biểu đồ công khai của VNDirect, dự phòng SSI (không cần khoá). Đây là API không
 chính thức, có thể thay đổi bất cứ lúc nào; có 2 nguồn để một bên lỗi thì bên kia thay.
 
 Cài:   pip install requests tzdata
@@ -45,9 +45,11 @@ SESSIONS = [((9, 0), (11, 30)), ((13, 0), (14, 45))]   # bỏ nghỉ trưa
 TOTAL_MIN = 255                                          # 150 phút sáng + 105 phút chiều
 # Nguồn dữ liệu công khai, không cần khoá. Thử lần lượt: nguồn đầu lỗi thì tự chuyển nguồn sau.
 SOURCES = [
-    ("SSI", "https://iboard-api.ssi.com.vn/statistics/charts/history", "1D"),
     ("VNDirect", "https://dchart-api.vndirect.com.vn/dchart/history", "D"),
+    ("SSI", "https://iboard-api.ssi.com.vn/statistics/charts/history", "1D"),
 ]
+SOURCE_PAUSE_MIN = 15    # nguồn lỗi liên tục thì tạm bỏ qua 15 phút
+source_down_until = {}   # tên nguồn -> thời điểm được thử lại
 HEADERS = {"User-Agent": "Mozilla/5.0"}
 
 last_sent = {}   # key cảnh báo -> thời điểm gửi gần nhất
@@ -61,6 +63,8 @@ def fetch_daily(symbol, now):
     Thử từng nguồn trong SOURCES, mỗi nguồn tối đa 2 lần.
     """
     for name, url, res in SOURCES:
+        if source_down_until.get(name, 0) > time.time():
+            continue                               # nguồn đang bị tạm bỏ qua
         params = {"resolution": res, "symbol": symbol,
                   "from": int((now - timedelta(days=60)).timestamp()), "to": int(now.timestamp())}
         for attempt in range(2):
@@ -75,8 +79,9 @@ def fetch_daily(symbol, now):
                     return d
             except (requests.RequestException, ValueError, AttributeError) as e:
                 print(f"[{symbol}] {name} lỗi lần {attempt + 1}: {e}")
-            time.sleep(2)
-        print(f"[{symbol}] {name} không phản hồi, chuyển nguồn khác")
+            time.sleep(1)
+        source_down_until[name] = time.time() + SOURCE_PAUSE_MIN * 60
+        print(f"[{symbol}] {name} không phản hồi, tạm bỏ qua {SOURCE_PAUSE_MIN} phút")
     return None
 
 
