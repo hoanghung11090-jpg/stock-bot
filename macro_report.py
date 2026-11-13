@@ -4,7 +4,7 @@ macro_report.py - Bản tin vĩ mô 21:00 thứ 2-6, gửi qua Telegram.
 Nội dung:
   1. Nhiệt kế Mỹ: DXY, US10Y, VIX, S&P 500, Nasdaq, S&P 500 futures (phiên Mỹ tối nay)
   2. Châu Á & hàng hoá: Nikkei, KOSPI, Hang Seng, Brent, WTI, Vàng
-  3. Việt Nam: VN-Index (vs MA20), USD/VND, USD/CNY
+  3. Việt Nam: VN-Index (MA20/MA50), lãi suất, khối ngoại, USD/VND, USD/CNY
   4. Vĩ mô Mỹ hàng tháng (nếu có FRED_API_KEY): Core PCE YoY, Non-farm Payrolls
   5. Sự kiện sắp tới: đáo hạn phái sinh VN30, NFP dự kiến, + danh sách tự thêm (EVENTS)
   6. Nhiệt kế điểm số (quy tắc cố định) + nhận định AI (nếu có ANTHROPIC_API_KEY)
@@ -348,12 +348,17 @@ def score(data):
     add(ff.get("side") == "bán" and amt >= 500, -1, "Khối ngoại bán ròng mạnh (≥ 500 tỷ)")
     add(ff.get("side") == "mua" and amt >= 500, +1, "Khối ngoại mua ròng mạnh (≥ 500 tỷ)")
     vni = g("VNINDEX")
-    if vni and vni.get("ma50"):
-        add(vni["ma20"] > vni["ma50"] and vni["last"] > vni["ma50"], +1, "Xu hướng trung hạn tăng (MA20 > MA50)")
-        add(vni["ma20"] < vni["ma50"] and vni["last"] < vni["ma50"], -1, "Xu hướng trung hạn giảm (MA20 < MA50)")
+    # Xu hướng kỹ thuật: gộp MA20 & MA50 thành 1 tín hiệu (tối đa ±1), chỉ tính khi ngắn hạn và trung hạn cùng chiều
     if vni:
-        add(vni["last"] > vni["ma20"], +1, "VN-Index trên MA20 (xu hướng ngắn hạn tốt)")
-        add(vni["last"] < vni["ma20"], -1, "VN-Index dưới MA20")
+        up_s, dn_s = vni["last"] > vni["ma20"], vni["last"] < vni["ma20"]
+        if vni.get("ma50"):
+            add(up_s and vni["ma20"] > vni["ma50"], +1,
+                "Xu hướng kỹ thuật tăng (VNI trên MA20, MA20 trên MA50)")
+            add(dn_s and vni["ma20"] < vni["ma50"], -1,
+                "Xu hướng kỹ thuật giảm (VNI dưới MA20, MA20 dưới MA50)")
+        else:
+            add(up_s, +1, "VN-Index trên MA20")
+            add(dn_s, -1, "VN-Index dưới MA20")
     label = "Tích cực" if pts >= 2 else "Tiêu cực" if pts <= -2 else "Trung tính"
     return pts, label, why
 
@@ -588,6 +593,8 @@ def main():
 
     L += ["", "<b>🌡 CHI TIẾT NHIỆT KẾ</b>"]
     L += [esc(w) for w in why] or ["Không có tín hiệu nổi bật"]
+    L.append("<i>Thang điểm: mỗi tín hiệu ±1, cộng lại. ≥ +2 Tích cực · −1…+1 Trung tính · ≤ −2 Tiêu cực. "
+             "MA20/MA50 = giá TB 20/50 phiên.</i>")
     if check:
         L.append("🎯 " + esc(check))
     L += ["", "<i>Tổng hợp tự động, chỉ để tham khảo, không phải khuyến nghị đầu tư.</i>"]
