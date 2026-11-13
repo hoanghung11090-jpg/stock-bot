@@ -151,6 +151,53 @@ def vn_money_market():
     return None
 
 
+# ===================== TIN CHÍNH SÁCH =====================
+NEWS_FEEDS = [
+    "https://vnexpress.net/rss/kinh-doanh.rss",
+    "https://cafef.vn/tai-chinh-ngan-hang.rss",
+    "https://cafef.vn/thi-truong-chung-khoan.rss",
+    "https://cafef.vn/vi-mo-dau-tu.rss",
+]
+# Tin có từ khoá này mới được đưa vào (chữ thường)
+NEWS_KEYWORDS = ["nhnn", "ngân hàng nhà nước", "lãi suất", "tỷ giá", "thủ tướng", "chính phủ", "nghị định",
+                 "thông tư", "công văn", "ủy ban chứng khoán", "ubcknn", "nâng hạng", "ftse", "msci", "fed",
+                 "khối ngoại", "margin", "tín dụng", "đầu tư công", "thuế", "gdp", "cpi", "pmi", "vn-index",
+                 "thanh tra", "room", "trái phiếu", "omo", "tín phiếu"]
+NEWS_EXCLUDE = ["ưu đãi", "đồng hành", "khuyến mãi", "top50", "top 50", "privilege", "giá vàng"]
+
+
+def policy_news(now, hours=24, limit=8):
+    """Tiêu đề tin chính sách/vĩ mô trong `hours` giờ qua, lọc theo từ khoá."""
+    import re
+    from email.utils import parsedate_to_datetime
+    items, seen = [], set()
+    for url in NEWS_FEEDS:
+        try:
+            xml = requests.get(url, headers=HEADERS, timeout=15).text
+        except requests.RequestException as e:
+            print("Lỗi RSS:", url, e)
+            continue
+        for block in re.findall(r"<item>(.*?)</item>", xml, re.S):
+            t = re.search(r"<title>(?:<!\[CDATA\[)?(.*?)(?:\]\]>)?</title>", block, re.S)
+            l = re.search(r"<link>(?:<!\[CDATA\[)?(.*?)(?:\]\]>)?</link>", block, re.S)
+            d = re.search(r"<pubDate>(.*?)</pubDate>", block, re.S)
+            if not t:
+                continue
+            title = re.sub(r"\s+", " ", t.group(1)).strip()
+            low = title.lower()
+            if low in seen or not any(k in low for k in NEWS_KEYWORDS) or any(k in low for k in NEWS_EXCLUDE):
+                continue
+            try:
+                when = parsedate_to_datetime(d.group(1).strip()).astimezone(TZ) if d else now
+            except (TypeError, ValueError):
+                when = now
+            if now - when > timedelta(hours=hours):
+                continue
+            seen.add(low)
+            items.append((when, title, l.group(1).strip() if l else ""))
+    return sorted(items, reverse=True)[:limit]
+
+
 # ===================== LỊCH SỰ KIỆN =====================
 def third_thursday(y, m):
     d = date(y, m, 1)
@@ -236,6 +283,7 @@ def ai_view(data, pts, label, horizon):
         f"Nhiệt kế quy tắc: {pts} điểm ({label}).\n\n"
         f"Viết nhận định ngắn bằng tiếng Việt về VN-Index cho {horizon}. Tối đa 6 dòng, không markdown phức tạp.\n"
         "- Nêu 2-3 yếu tố chính từ dữ liệu, kịch bản nghiêng về hướng nào và yếu tố có thể làm sai kịch bản.\n"
+        "- Xem cả policy_news_titles (tin chính sách VN/quốc tế trong ngày), nêu tin nào có thể ảnh hưởng.\n"
         "- Phân biệt rõ dữ liệu và nhận định. Không khuyến nghị mua/bán mã cụ thể. Không bịa số liệu ngoài JSON."
     )
     try:
@@ -338,6 +386,18 @@ def main():
         lines.append("  Qua đêm liên NH: chưa lấy được")
     d = DEPOSIT_12M
     lines.append(f"  Huy động 12T: Big4 {d['big4']}%, cao nhất {d['max_private']}% (cập nhật {d['updated'][8:]}/{d['updated'][5:7]})")
+    lines.append("")
+
+    news = policy_news(now)
+    data["policy_news_titles"] = [t for _, t, _ in news]
+    lines.append("📰 Tin chính sách & vĩ mô 24h")
+    if news:
+        for w, t, link in news:
+            lines.append(f"  • {w:%H:%M} {t}")
+            if link:
+                lines.append(f"    {link}")
+    else:
+        lines.append("  Không có tin đáng chú ý")
     lines.append("")
 
     thu = ["T2", "T3", "T4", "T5", "T6", "T7", "CN"]
