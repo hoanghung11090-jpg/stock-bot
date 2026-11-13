@@ -433,9 +433,11 @@ def send(text):
     if not TOKEN or not CHAT_ID:
         print(text)
         return
+    import re
+    visible = lambda t: len(re.sub(r"<[^>]+>", "", t))   # Telegram chỉ tính phần chữ hiển thị (giới hạn 4096)
     chunks, cur = [], ""
     for line in text.split("\n"):
-        if len(cur) + len(line) > 3800:
+        if visible(cur) + visible(line) > 3900:
             chunks.append(cur)
             cur = ""
         cur += line + "\n"
