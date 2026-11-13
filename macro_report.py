@@ -157,7 +157,17 @@ NEWS_FEEDS = [
     "https://cafef.vn/tai-chinh-ngan-hang.rss",
     "https://cafef.vn/thi-truong-chung-khoan.rss",
     "https://cafef.vn/vi-mo-dau-tu.rss",
+    "https://cafef.vn/doanh-nghiep.rss",
 ]
+
+# Tin doanh nghiệp trong danh mục: mã -> mẫu nhận diện trong tiêu đề (regex, chữ thường)
+WATCHLIST_NEWS = {
+    "VPX": [r"\bvpx\b", r"vpbanks", r"chứng khoán vpbank"],
+    "VPB": [r"\bvpb\b", r"vpbank(?!s)"],
+    "TCB": [r"\btcb\b", r"techcombank"],
+    "MBB": [r"\bmbb\b", r"\bmb ?bank\b", r"ngân hàng quân đội", r"^mb\b"],
+    "SSI": [r"\bssi\b"],
+}
 # Tin có từ khoá này mới được đưa vào (chữ thường)
 NEWS_KEYWORDS = ["nhnn", "ngân hàng nhà nước", "lãi suất", "tỷ giá", "thủ tướng", "chính phủ", "nghị định",
                  "thông tư", "công văn", "ủy ban chứng khoán", "ubcknn", "nâng hạng", "ftse", "msci", "fed",
@@ -166,8 +176,59 @@ NEWS_KEYWORDS = ["nhnn", "ngân hàng nhà nước", "lãi suất", "tỷ giá",
 NEWS_EXCLUDE = ["ưu đãi", "đồng hành", "khuyến mãi", "top50", "top 50", "privilege", "giá vàng"]
 
 
+def fetch_feed_items(now, hours=24):
+    """Đọc tất cả RSS một lần: trả về [(thời gian, tiêu đề, link)] trong `hours` giờ qua."""
+    import re
+    from email.utils import parsedate_to_datetime
+    items, seen = [], set()
+    for url in NEWS_FEEDS:
+        try:
+            xml = requests.get(url, headers=HEADERS, timeout=15).text
+        except requests.RequestException as e:
+            print("Lỗi RSS:", url, e)
+            continue
+        for block in re.findall(r"<item>(.*?)</item>", xml, re.S):
+            t = re.search(r"<title>(?:<!\[CDATA\[)?(.*?)(?:\]\]>)?</title>", block, re.S)
+            l = re.search(r"<link>(?:<!\[CDATA\[)?(.*?)(?:\]\]>)?</link>", block, re.S)
+            d = re.search(r"<pubDate>(.*?)</pubDate>", block, re.S)
+            if not t:
+                continue
+            title = re.sub(r"\s+", " ", t.group(1)).strip()
+            if title.lower() in seen:
+                continue
+            try:
+                when = parsedate_to_datetime(d.group(1).strip()).astimezone(TZ) if d else now
+            except (TypeError, ValueError):
+                when = now
+            if now - when <= timedelta(hours=hours):
+                seen.add(title.lower())
+                items.append((when, title, l.group(1).strip() if l else ""))
+    return sorted(items, reverse=True)
+
+
+def watchlist_news(items, limit=10):
+    """Tin có nhắc mã/tên doanh nghiệp trong danh mục. Trả về [(mã, thời gian, tiêu đề, link)]."""
+    import re
+    out = []
+    for when, title, link in items:
+        low = title.lower()
+        if any(k in low for k in NEWS_EXCLUDE):
+            continue
+        for sym, pats in WATCHLIST_NEWS.items():
+            if any(re.search(p, low) for p in pats):
+                out.append((sym, when, title, link))
+                break
+    return out[:limit]
+
+
+def policy_news_from(items, limit=8):
+    """Lọc tin chính sách/vĩ mô theo từ khoá."""
+    return [(w, t, l) for w, t, l in items
+            if any(k in t.lower() for k in NEWS_KEYWORDS) and not any(k in t.lower() for k in NEWS_EXCLUDE)][:limit]
+
+
 def policy_news(now, hours=24, limit=8):
-    """Tiêu đề tin chính sách/vĩ mô trong `hours` giờ qua, lọc theo từ khoá."""
+    """(Giữ lại để tương thích) Tiêu đề tin chính sách/vĩ mô trong `hours` giờ qua."""
     import re
     from email.utils import parsedate_to_datetime
     items, seen = [], set()
@@ -283,6 +344,7 @@ def ai_view(data, pts, label, horizon):
         f"Nhiệt kế quy tắc: {pts} điểm ({label}).\n\n"
         f"Viết nhận định ngắn bằng tiếng Việt về VN-Index cho {horizon}. Tối đa 6 dòng, không markdown phức tạp.\n"
         "- Nêu 2-3 yếu tố chính từ dữ liệu, kịch bản nghiêng về hướng nào và yếu tố có thể làm sai kịch bản.\n"
+        "- Xem watchlist_news_titles (tin doanh nghiệp VPB, VPX, TCB, MBB, SSI): nêu tác động có thể có.\n"
         "- Xem cả policy_news_titles (tin chính sách VN/quốc tế trong ngày), nêu tin nào có thể ảnh hưởng.\n"
         "- Phân biệt rõ dữ liệu và nhận định. Không khuyến nghị mua/bán mã cụ thể. Không bịa số liệu ngoài JSON."
     )
@@ -388,7 +450,20 @@ def main():
     lines.append(f"  Huy động 12T: Big4 {d['big4']}%, cao nhất {d['max_private']}% (cập nhật {d['updated'][8:]}/{d['updated'][5:7]})")
     lines.append("")
 
-    news = policy_news(now)
+    feed = fetch_feed_items(now)
+    wl = watchlist_news(feed)
+    data["watchlist_news_titles"] = [f"{sym}: {t}" for sym, _, t, _ in wl]
+    lines.append("📌 Tin cổ phiếu danh mục 24h")
+    if wl:
+        for sym, w, t, link in wl:
+            lines.append(f"  • [{sym}] {t}")
+            if link:
+                lines.append(f"    {link}")
+    else:
+        lines.append("  Không có tin mới về VPB, VPX, TCB, MBB, SSI")
+    lines.append("")
+
+    news = policy_news_from(feed)
     data["policy_news_titles"] = [t for _, t, _ in news]
     lines.append("📰 Tin chính sách & vĩ mô 24h")
     if news:
