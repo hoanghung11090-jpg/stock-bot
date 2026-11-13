@@ -1,0 +1,50 @@
+# Bot cảnh báo cổ phiếu - chạy 2 ca mỗi ngày thứ 2-6 trên máy chủ GitHub.
+# Giờ cron tính theo UTC: 01:40 UTC = 8:40 VN (ca sáng), 05:40 UTC = 12:40 VN (ca chiều).
+# Bật sớm 20 phút vì GitHub hay khởi động trễ vài phút; bot tự chờ tới giờ mở cửa.
+name: Stock Bot
+
+on:
+  schedule:
+    - cron: "40 1 * * 1-5"   # ca sáng
+    - cron: "40 5 * * 1-5"   # ca chiều + chốt phiên 15:05
+  workflow_dispatch:          # nút "Run workflow" để chạy thử bằng tay
+
+permissions:
+  contents: write             # để lưu file snapshot vào repo
+
+concurrency:
+  group: stock-bot
+  cancel-in-progress: false
+
+jobs:
+  run:
+    runs-on: ubuntu-latest
+    timeout-minutes: 200
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Cài thư viện
+        run: pip install requests tzdata
+
+      - name: Chạy bot
+        env:
+          TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+          TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
+        run: python stock_bot.py
+
+      - name: Lưu snapshot cuối phiên vào repo
+        if: always()
+        run: |
+          if [ -f daily_market_snapshot.json ]; then
+            mkdir -p snapshots
+            cp daily_market_snapshot.json "snapshots/$(TZ=Asia/Ho_Chi_Minh date +%F).json"
+            git config user.name "stock-bot"
+            git config user.email "stock-bot@users.noreply.github.com"
+            git add daily_market_snapshot.json snapshots/
+            git commit -m "Snapshot $(TZ=Asia/Ho_Chi_Minh date +%F)" || echo "Không có thay đổi"
+            git push
+          fi
