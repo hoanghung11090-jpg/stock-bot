@@ -84,19 +84,27 @@ def get_json(url, params=None, headers=None, tries=2):
 
 
 def yahoo(symbol):
-    """Giá đóng cửa gần nhất và % thay đổi so với phiên trước (Yahoo Finance, API công khai)."""
+    """
+    Giá gần nhất và % thay đổi so với phiên liền trước (Yahoo Finance, API công khai).
+    So sánh theo NGÀY giao dịch để không lấy nhầm giá hôm nay làm giá tham chiếu.
+    """
     for host in ("query1", "query2"):
         d = get_json(f"https://{host}.finance.yahoo.com/v8/finance/chart/{symbol}",
                      {"range": "1mo", "interval": "1d"})
         try:
             res = d["chart"]["result"][0]
-            closes = [c for c in res["indicators"]["quote"][0]["close"] if c is not None]
-            last = res["meta"].get("regularMarketPrice") or closes[-1]
-            prev = closes[-2] if closes[-1] == last else closes[-1]
-            ts = res["meta"].get("regularMarketTime") or res["timestamp"][-1]
-            asof = datetime.fromtimestamp(ts, ZoneInfo(res["meta"].get("exchangeTimezoneName") or "UTC"))
-            return {"last": last, "chg": last - prev, "pct": (last / prev - 1) * 100, "asof": asof.strftime("%d/%m")}
-        except (TypeError, KeyError, IndexError, ZeroDivisionError):
+            meta = res["meta"]
+            tz = ZoneInfo(meta.get("exchangeTimezoneName") or "UTC")
+            bars = [(datetime.fromtimestamp(t, tz).date(), c)
+                    for t, c in zip(res["timestamp"], res["indicators"]["quote"][0]["close"]) if c is not None]
+            last = meta.get("regularMarketPrice") or bars[-1][1]
+            ts = meta.get("regularMarketTime") or res["timestamp"][-1]
+            last_day = datetime.fromtimestamp(ts, tz).date()
+            prev_bars = [c for day, c in bars if day < last_day]   # phiên trước ngày của giá hiện tại
+            prev = prev_bars[-1] if prev_bars else meta.get("chartPreviousClose")
+            return {"last": last, "chg": last - prev, "pct": (last / prev - 1) * 100,
+                    "asof": last_day.strftime("%d/%m")}
+        except (TypeError, KeyError, IndexError, ZeroDivisionError, ValueError):
             continue
     return None
 
@@ -369,19 +377,22 @@ def ai_view(data, pts, label, horizon):
     if not AI_KEY:
         return None
     prompt = (
-        f"Dữ liệu thị trường (JSON): {json.dumps(data, ensure_ascii=False, default=str)}\n"
+        f"Bạn là chuyên viên phân tích chứng khoán Việt Nam. Dữ liệu (JSON): "
+        f"{json.dumps(data, ensure_ascii=False, default=str)}\n"
         f"Nhiệt kế quy tắc: {pts} điểm ({label}).\n\n"
-        f"Viết nhận định ngắn bằng tiếng Việt về VN-Index cho {horizon}. Tối đa 6 dòng, không markdown phức tạp.\n"
-        "- Nêu 2-3 yếu tố chính từ dữ liệu, kịch bản nghiêng về hướng nào và yếu tố có thể làm sai kịch bản.\n"
-        "- Xem watchlist_news_titles (tin doanh nghiệp VPB, VPX, TCB, MBB, SSI): nêu tác động có thể có.\n"
-        "- Xem cả policy_news_titles (tin chính sách VN/quốc tế trong ngày), nêu tin nào có thể ảnh hưởng.\n"
-        "- Phân biệt rõ dữ liệu và nhận định. Không khuyến nghị mua/bán mã cụ thể. Không bịa số liệu ngoài JSON."
+        f"Viết nhận định VN-Index cho {horizon}, tiếng Việt, ĐÚNG 4 dòng, mỗi dòng 1 câu ngắn, không markdown:\n"
+        "Dòng 1 - 'Kịch bản:' nghiêng tăng/giảm/đi ngang và vùng điểm cần chú ý (dựa trên MA20/MA50 trong dữ liệu).\n"
+        "Dòng 2 - 'Động lực:' 1-2 yếu tố quan trọng nhất (vĩ mô, dòng tiền, tin chính sách).\n"
+        "Dòng 3 - 'Danh mục:' tác động của tin trong watchlist_news_titles tới mã liên quan (VPB, VPX, TCB, MBB, SSI); "
+        "nếu không có tin thì nhận xét chung cho nhóm ngân hàng/chứng khoán.\n"
+        "Dòng 4 - 'Sai nếu:' điều kiện làm kịch bản sai.\n"
+        "Quy tắc: không nhắc lại bảng số liệu, không bịa số ngoài JSON, không khuyến nghị mua/bán mã cụ thể."
     )
     try:
         r = requests.post("https://api.anthropic.com/v1/messages", timeout=60,
                           headers={"x-api-key": AI_KEY, "anthropic-version": "2023-06-01",
                                    "content-type": "application/json"},
-                          json={"model": AI_MODEL, "max_tokens": 600,
+                          json={"model": AI_MODEL, "max_tokens": 1500,
                                 "messages": [{"role": "user", "content": prompt}]})
         if r.status_code != 200:
             print("AI lỗi:", r.status_code, r.text[:300])
