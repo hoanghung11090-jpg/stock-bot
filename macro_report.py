@@ -641,6 +641,18 @@ def main():
     L += ["", "<i>Tổng hợp tự động, chỉ để tham khảo, không phải khuyến nghị đầu tư.</i>"]
     send("\n".join(L))
 
+    # Lưu bối cảnh thị trường gọn nhẹ cho bot hỏi đáp (Cloudflare Worker đọc file này)
+    if not DRY_RUN:
+        ctx = {"generated_at": now.isoformat(timespec="minutes"), "thermometer": {"label": label, "score": pts,
+               "signals": why}, "ai_view": view, "vnindex": vni, "vn_money_market": mm, "deposit_12m": DEPOSIT_12M,
+               "foreign_flow_market": data.get("foreign_flow_market"),
+               "markets": {k: {"last": round(v["last"], 2), "pct": round(v["pct"], 2)}
+                           for k, v in data.items() if isinstance(v, dict) and "pct" in v and "last" in v and k != "VNINDEX"},
+               "watchlist_news": data["watchlist_news_titles"], "policy_news": data["policy_news_titles"],
+               "us_events": [f"{t:%d/%m %H:%M} {n}" for t, n in us_ev if t]}
+        with open("latest_context.json", "w", encoding="utf-8") as f:
+            json.dump(ctx, f, ensure_ascii=False, indent=1, default=str)
+
 
 if __name__ == "__main__":
     main()
