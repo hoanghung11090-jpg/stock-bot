@@ -1,0 +1,107 @@
+{
+ "generated_at": "2026-11-13T21:32+07:00",
+ "thermometer": {
+  "label": "Trung tính",
+  "score": -1,
+  "signals": [
+   "-1 Xu hướng kỹ thuật giảm (VNI dưới MA20, MA20 dưới MA50)"
+  ]
+ },
+ "ai_view": "Kịch bản: VN-Index nghiêng đi ngang, giằng co quanh MA20 (khoảng 1.736 điểm) và gặp cản ở MA50 (khoảng 1.759 điểm) khi thanh khoản vẫn thấp hơn mức trung bình.\nĐộng lực: NHNN tiếp tục hút ròng qua OMO, trong khi lợi suất Mỹ, DXY và tỷ giá USD/VND cùng tăng, gây sức ép lên dòng tiền dù chủ trương giảm lãi suất cho vay đang hỗ trợ tâm lý.\nDanh mục: Việc MBB chào bán riêng lẻ 200 triệu cổ phiếu giúp tăng vốn và dư địa tăng trưởng tín dụng nhưng có thể tạo áp lực pha loãng ngắn hạn, còn nhóm ngân hàng nói chung có thể chịu áp lực biên lãi khi lãi suất cho vay giảm.\nSai nếu: VN-Index vượt và giữ được trên MA50 với thanh khoản cải thiện rõ, hoặc thủng hẳn MA20 kèm khối lượng bán gia tăng.",
+ "vnindex": {
+  "last": 1734.93,
+  "pct": 0.010376134889766853,
+  "ma20": 1736.399,
+  "ma50": 1759.2258,
+  "pct5": 0.5546668521352105,
+  "vol_vs_avg": 0.7719442596842357,
+  "date": "2026-11-13"
+ },
+ "vn_money_market": {
+  "session": "13/11",
+  "omo": "hút",
+  "omo_bn": "18.153",
+  "overnight": 4.8
+ },
+ "deposit_12m": {
+  "updated": "2026-11-12",
+  "big4": 6.8,
+  "max_private": 7.0,
+  "max_private_banks": "MBV, PGBank, Sacombank, VCBNeo, VIB"
+ },
+ "foreign_flow_market": null,
+ "markets": {
+  "DXY": {
+   "last": 103.27,
+   "pct": 0.09
+  },
+  "US10Y": {
+   "last": 5.14,
+   "pct": 0.82
+  },
+  "VIX": {
+   "last": 17.97,
+   "pct": -3.9
+  },
+  "S&P 500": {
+   "last": 7617.4,
+   "pct": 0.33
+  },
+  "Nasdaq": {
+   "last": 25414.88,
+   "pct": 0.19
+  },
+  "S&P fut (tối nay)": {
+   "last": 7645.25,
+   "pct": 0.39
+  },
+  "Nikkei": {
+   "last": 61142.35,
+   "pct": 0.53
+  },
+  "KOSPI": {
+   "last": 5290.53,
+   "pct": -0.98
+  },
+  "Hang Seng": {
+   "last": 23637.6,
+   "pct": -1.55
+  },
+  "Brent": {
+   "last": 96.82,
+   "pct": 1.04
+  },
+  "WTI": {
+   "last": 89.32,
+   "pct": 0.65
+  },
+  "Vàng (HĐTL)": {
+   "last": 3886.4,
+   "pct": 0.03
+  },
+  "USD/VND": {
+   "last": 25711.0,
+   "pct": 0.23
+  },
+  "USD/CNY": {
+   "last": 6.66,
+   "pct": -0.14
+  }
+ },
+ "watchlist_news": [
+  "MBB: MB chào bán riêng lẻ 200 triệu cổ phiếu, dự kiến thu hơn 3.018 tỷ đồng"
+ ],
+ "policy_news": [
+  "Thị trường “xanh vỏ, đỏ lòng”, VN-Index thoát hiểm phút cuối",
+  "Thanh tra việc giảm lãi suất ngân hàng ngay tháng 11",
+  "Khối ngoại \"tung\" hơn 300 tỷ gom một cổ phiếu chứng khoán phiên cuối tuần",
+  "Lãi suất cho vay đã giảm, doanh nghiệp còn e ngại gì?",
+  "Muji xin lỗi vì hơn 1 triệu thẻ tín dụng có nguy cơ lộ dữ liệu"
+ ],
+ "us_events": [
+  "25/11 20:30 Core PCE",
+  "04/12 20:30 Non-farm Payrolls",
+  "10/12 02:00 Fed công bố lãi suất (FOMC)",
+  "10/12 20:30 CPI Mỹ"
+ ]
+}
