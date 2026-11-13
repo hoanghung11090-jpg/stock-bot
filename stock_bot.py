@@ -34,6 +34,7 @@ PRICE_PCT = 2.5          # % biến động mạnh
 VOL_RATIO = 1.5          # lần so với TB20 đã quy đổi theo thời gian
 BB_PERIOD, BB_STD = 20, 2
 COOLDOWN_MIN = 15        # không lặp lại cùng cảnh báo trong 15 phút
+PRICE_BAND = 0.07        # biên độ HOSE ±7% (đổi nếu theo dõi mã HNX 10% / UPCoM 15%)
 SNAPSHOT_FILE = "daily_market_snapshot.json"
 
 # >>> DÁN TOKEN BOT TELEGRAM VÀO GIỮA HAI DẤU NGOẶC KÉP DƯỚI ĐÂY <<<
@@ -53,6 +54,7 @@ source_down_until = {}   # tên nguồn -> thời điểm được thử lại
 HEADERS = {"User-Agent": "Mozilla/5.0"}
 
 last_sent = {}   # key cảnh báo -> thời điểm gửi gần nhất
+limit_state = {} # mã -> {"date", "hit_ceil", "hit_floor"}: đã chạm trần/sàn trong phiên chưa
 latest = {}      # mã -> dữ liệu mới nhất (dùng cho snapshot)
 
 
@@ -96,14 +98,40 @@ def analyze(symbol, d, now):
     sd = statistics.pstdev(window)
     avg20 = statistics.mean(vols[-BB_PERIOD - 1:-1])   # TB20 không tính hôm nay
     frac = max(elapsed_minutes(now), 1) / TOTAL_MIN
+    ref = round(prev * 1000)
+    ceil, floor = price_limits(ref)
+    p = round(price * 1000)
+    st = limit_state.get(symbol)
+    if not st or st["date"] != now.date():
+        st = limit_state[symbol] = {"date": now.date(), "hit_ceil": False, "hit_floor": False}
+    at_ceil, at_floor = p >= ceil, p <= floor
+    lost_ceil = st["hit_ceil"] and not at_ceil      # đã lên trần rồi bị bán xuống
+    left_floor = st["hit_floor"] and not at_floor   # đã xuống sàn rồi được kéo lên
+    st["hit_ceil"] |= at_ceil
+    st["hit_floor"] |= at_floor
     return {
         "symbol": symbol, "time": now.strftime("%H:%M:%S"),
-        "price": price * 1000, "prev_close": prev * 1000,
+        "price": p, "prev_close": ref, "ceil": ceil, "floor": floor,
+        "at_ceil": at_ceil, "at_floor": at_floor, "lost_ceil": lost_ceil, "left_floor": left_floor,
         "pct": (price / prev - 1) * 100,
         "volume": vol, "avg_vol20": avg20,
         "vol_ratio": vol / (avg20 * frac) if avg20 else 0,   # so với KL kỳ vọng tới giờ này
         "bb_upper": (mid + BB_STD * sd) * 1000, "bb_lower": (mid - BB_STD * sd) * 1000,
     }
+
+
+def tick_size(price):
+    """Bước giá cổ phiếu HOSE: < 10.000đ: 10đ; 10.000-49.950đ: 50đ; >= 50.000đ: 100đ."""
+    return 10 if price < 10_000 else 50 if price < 50_000 else 100
+
+
+def price_limits(ref):
+    """Giá trần (làm tròn xuống) và giá sàn (làm tròn lên) theo bước giá."""
+    import math
+    ceil_raw, floor_raw = ref * (1 + PRICE_BAND), ref * (1 - PRICE_BAND)
+    ceil = math.floor(ceil_raw / tick_size(ceil_raw)) * tick_size(ceil_raw)
+    floor = math.ceil(floor_raw / tick_size(floor_raw)) * tick_size(floor_raw)
+    return ceil, floor
 
 
 # ===================== TÍN HIỆU + GỢI Ý =====================
@@ -113,6 +141,29 @@ def signals(a, now):
     up, down = a["pct"] >= PRICE_PCT, a["pct"] <= -PRICE_PCT
     above, below = a["price"] > a["bb_upper"], a["price"] < a["bb_lower"]
     out = []
+    # --- Trần / sàn: ưu tiên cao nhất ---
+    if a["at_ceil"]:
+        out.append(("CEIL", "TĂNG TRẦN" + (" có KL lớn" if vol_high else ""),
+                    "Lực cầu rất mạnh. Đang giữ: giữ, theo dõi dư mua trần. Chưa có: không đặt mua đuổi giá trần; "
+                    "nếu trần bị bán mạnh (mất trần) là tín hiệu xấu."))
+        return out
+    if a["at_floor"]:
+        out.append(("FLOOR", "GIẢM SÀN" + (" có KL lớn" if vol_high else ""),
+                    "Bán tháo mạnh. Không bắt đáy; dư bán sàn lớn thì phiên sau dễ giảm tiếp. "
+                    "Đang giữ: xem lại điểm cắt lỗ."))
+        return out
+    if a["lost_ceil"]:
+        out.append(("LOST_CEIL", "MẤT TRẦN (đã lên trần, bị bán xuống)",
+                    "Có lực chốt lời mạnh ở vùng giá cao. Đang giữ: cân nhắc chốt một phần nếu tiếp tục giảm. "
+                    "Chưa có: không mua đuổi."))
+        return out
+    if a["left_floor"]:
+        out.append(("LEFT_FLOOR", "THOÁT SÀN (đã nằm sàn, được kéo lên)",
+                    "Có lực cầu bắt đáy. Chưa phải tín hiệu đảo chiều; chờ phiên sau xác nhận bằng KL."))
+        return out
+
+    small_up = 1 <= a["pct"] < PRICE_PCT
+    small_down = -PRICE_PCT < a["pct"] <= -1
     if vol_high and down:
         out.append(("CRASH", "KL cao + giá sập",
                     "Bán tháo có khối lượng. Không bắt đáy. Đang giữ: xem lại điểm cắt lỗ."))
@@ -131,8 +182,15 @@ def signals(a, now):
         if down and not below:
             out.append(("DOWN", "Giá giảm mạnh", "Giảm nhưng KL thường. Kiểm tra lại mức hỗ trợ gần nhất."))
         if vol_high and not (up or down or above or below):
-            out.append(("VOL", "KL đột biến, giá chưa chạy",
-                        "Có thể đang gom hoặc xả. Chờ giá phá hướng rồi mới quyết."))
+            if small_up:
+                out.append(("VOL_UP", "Tăng có KL hỗ trợ",
+                            f"Lực cầu tốt. Theo dõi xem có vượt +{PRICE_PCT}% hoặc dải BB trên không."))
+            elif small_down:
+                out.append(("VOL_DOWN", "Giảm có KL lớn",
+                            "Áp lực bán đáng chú ý. Theo dõi mức hỗ trợ gần nhất."))
+            else:
+                out.append(("VOL", "KL đột biến, giá đi ngang",
+                            "Có thể đang gom hoặc xả. Chờ giá phá hướng rồi mới quyết."))
     return out
 
 
@@ -143,7 +201,7 @@ def format_msg(a, sigs):
     for _, title, advice in sigs:
         lines.append(f"• *{title}*\n  → {advice}")
     lines.append(f"`KL {a['volume']:,.0f} ({a['vol_ratio']:.1f}x) | "
-                 f"BB {a['bb_lower']:,.0f}-{a['bb_upper']:,.0f}`")
+                 f"BB {a['bb_lower']:,.0f}-{a['bb_upper']:,.0f} | Sàn-Trần {a['floor']:,.0f}-{a['ceil']:,.0f}`")
     lines.append(f"_{a['time']} · gợi ý kỹ thuật, không phải khuyến nghị đầu tư_")
     return "\n".join(lines)
 
