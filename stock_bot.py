@@ -230,13 +230,15 @@ def find_chat_id():
         time.sleep(3)
 
 
-def send(text):
+def send(text, markdown=True):
     if not TOKEN or not CHAT_ID:
         print("(chưa cấu hình Telegram)\n" + text + "\n")
         return
+    payload = {"chat_id": CHAT_ID, "text": text, "disable_web_page_preview": True}
+    if markdown:
+        payload["parse_mode"] = "Markdown"
     try:
-        requests.post(f"https://api.telegram.org/bot{TOKEN}/sendMessage", timeout=10,
-                      json={"chat_id": CHAT_ID, "text": text, "parse_mode": "Markdown"})
+        requests.post(f"https://api.telegram.org/bot{TOKEN}/sendMessage", timeout=10, json=payload)
     except requests.RequestException as e:
         print("Lỗi gửi Telegram:", e)
 
@@ -256,6 +258,49 @@ def elapsed_minutes(now):
 def in_session(now):
     t = (now.hour, now.minute)
     return now.weekday() < 5 and any(s <= t < e for s, e in SESSIONS)
+
+
+# ===================== TIN NÓNG TRONG PHIÊN =====================
+NEWS_EVERY_N_SCANS = 10     # 10 vòng x 30 giây = khoảng 5 phút quét tin một lần
+news_seen = set()
+news_ready = False
+
+
+def news_watch(now):
+    """
+    Quét tin (RSS + Báo Chính phủ) và gửi ngay tin quan trọng:
+      - tin riêng về mã trong danh mục
+      - tin chính sách có từ khoá ưu tiên (NHNN, lãi suất, tỷ giá, UBCK, nâng hạng, margin, khối ngoại...)
+    Lần quét đầu mỗi ca chỉ gửi tin trong 60 phút gần nhất để tránh dội tin cũ.
+    """
+    global news_ready
+    try:
+        import macro_report as mr
+        items = mr.fetch_feed_items(now, hours=3)
+    except Exception as e:  # noqa: BLE001 - lỗi nguồn tin không được làm dừng bot giá
+        print("Lỗi quét tin:", e)
+        return
+    fresh = [it for it in items if it[1].lower() not in news_seen]
+    for it in items:
+        news_seen.add(it[1].lower())
+    if not news_ready:
+        fresh = [it for it in fresh if now - it[0] <= timedelta(minutes=60)]
+        news_ready = True
+    if not fresh:
+        return
+    wl = mr.watchlist_news(fresh, limit=5)
+    wl_titles = {t for _, _, t, _ in wl}
+    pol = [(w, t, l) for w, t, l in mr.policy_news_from(fresh, limit=5)
+           if t not in wl_titles and any(k in t.lower() for k in mr.PRIORITY_KEYWORDS)]
+    if not wl and not pol:
+        return
+    lines = ["📰 TIN MỚI"]
+    for sym, w, t, l in wl:
+        lines.append(f"• [{sym}] {w:%H:%M} {t}\n  {l}")
+    for w, t, l in pol:
+        src = "🏛 " if "chinhphu.vn" in l else ""
+        lines.append(f"• {src}{w:%H:%M} {t}\n  {l}")
+    send("\n".join(lines), markdown=False)   # chữ thường: link có dấu _ không làm hỏng định dạng
 
 
 # ===================== VÒNG LẶP =====================
@@ -296,11 +341,15 @@ def run_github_shift():
         print("Cuối tuần, thoát.")
         return
     announced = False
+    scans = 0
     while True:
         now = datetime.now(TZ)
         t = (now.hour, now.minute)
         if in_session(now):
             scan(now)
+            scans += 1
+            if scans % NEWS_EVERY_N_SCANS == 1:
+                news_watch(now)
             if not announced:                       # tin báo bot còn sống, 1 lần mỗi ca
                 announced = True
                 if latest:

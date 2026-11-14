@@ -185,11 +185,50 @@ NEWS_KEYWORDS = ["nhnn", "ngân hàng nhà nước", "lãi suất", "tỷ giá",
                  "thông tư", "công văn", "ủy ban chứng khoán", "ubcknn", "nâng hạng", "ftse", "msci", "fed",
                  "khối ngoại", "margin", "tín dụng", "đầu tư công", "thuế", "gdp", "cpi", "pmi", "vn-index",
                  "thanh tra", "room", "trái phiếu", "omo", "tín phiếu"]
-NEWS_EXCLUDE = ["ưu đãi", "đồng hành", "khuyến mãi", "top50", "top 50", "privilege", "giá vàng"]
+NEWS_EXCLUDE = ["ưu đãi", "đồng hành", "khuyến mãi", "top50", "top 50", "top 10", "privilege", "giá vàng",
+                "vinh danh", "giải thưởng", "giành cú đúp", "forbes", "euromoney", "trải nghiệm"]
+
+
+# Báo Điện tử Chính phủ không có RSS: đọc trực tiếp trang chuyên mục.
+# Mã bài dạng ...-102YYMMDDHHMMSSxxx.htm chứa sẵn thời điểm đăng.
+GOV_PAGES = [
+    "https://baochinhphu.vn/kinh-te/chung-khoan.htm",
+    "https://baochinhphu.vn/kinh-te/ngan-hang.htm",
+    "https://baochinhphu.vn/kinh-te.htm",
+    "https://baochinhphu.vn/chinh-sach-va-cuoc-song/chinh-sach-moi.htm",
+]
+
+
+def fetch_gov_items(now, hours=24):
+    """Tin từ baochinhphu.vn: [(thời gian, tiêu đề, link)] trong `hours` giờ qua."""
+    import html as htmllib
+    import re
+    items, seen = [], set()
+    for url in GOV_PAGES:
+        try:
+            page = requests.get(url, headers=HEADERS, timeout=15).text
+        except requests.RequestException as e:
+            print("Lỗi Báo Chính phủ:", url, e)
+            continue
+        for tag in re.findall(r"<a\s[^>]*>", page):
+            href = re.search(r'href="([^"]*-102(\d{15})\.htm)"', tag)
+            title = re.search(r'title="([^"]{15,300})"', tag)
+            if not href or not title or href.group(2) in seen:
+                continue
+            seen.add(href.group(2))
+            try:
+                when = datetime.strptime(href.group(2)[:12], "%y%m%d%H%M%S").replace(tzinfo=TZ)
+            except ValueError:
+                continue
+            if timedelta(0) <= now - when <= timedelta(hours=hours):
+                link = href.group(1) if href.group(1).startswith("http") else "https://baochinhphu.vn" + href.group(1)
+                items.append((when, htmllib.unescape(title.group(1)).strip(), link))
+    print(f"Báo Chính phủ: {len(items)} tin trong {hours} giờ")
+    return items
 
 
 def fetch_feed_items(now, hours=24):
-    """Đọc tất cả RSS một lần: trả về [(thời gian, tiêu đề, link)] trong `hours` giờ qua."""
+    """Đọc RSS + Báo Chính phủ: trả về [(thời gian, tiêu đề, link)] trong `hours` giờ qua, mới nhất trước."""
     import re
     from email.utils import parsedate_to_datetime
     items, seen = [], set()
@@ -215,6 +254,10 @@ def fetch_feed_items(now, hours=24):
             if now - when <= timedelta(hours=hours):
                 seen.add(title.lower())
                 items.append((when, title, l.group(1).strip() if l else ""))
+    for when, title, link in fetch_gov_items(now, hours):
+        if title.lower() not in seen:
+            seen.add(title.lower())
+            items.append((when, title, link))
     return sorted(items, reverse=True)
 
 
@@ -267,7 +310,7 @@ def policy_news_from(items, limit=8):
             continue
         if any(re.search(p, low) for p in GENERIC_PATTERNS):
             continue
-        prio = sum(k in low for k in PRIORITY_KEYWORDS)
+        prio = sum(k in low for k in PRIORITY_KEYWORDS) + (1 if "chinhphu.vn" in l else 0)
         picked.append((prio, w, t, l))
     picked.sort(key=lambda x: (x[0], x[1]), reverse=True)
     return [(w, t, l) for _, w, t, l in picked][:limit]
@@ -617,7 +660,8 @@ def main():
         L += [f"• <b>{s}</b> <a href=\"{esc(l)}\">{esc(t)}</a>" if l else f"• <b>{s}</b> {esc(t)}" for s, _, t, l in wl]
     L += ["", "<b>📰 CHÍNH SÁCH & VĨ MÔ 24H</b>"]
     if news:
-        L += [f"• <a href=\"{esc(l)}\">{esc(t)}</a>" if l else f"• {esc(t)}" for _, t, l in news]
+        L += [f"• {'🏛 ' if 'chinhphu.vn' in l else ''}<a href=\"{esc(l)}\">{esc(t)}</a>" if l else f"• {esc(t)}"
+              for _, t, l in news]
     else:
         L.append("Không có tin đáng chú ý")
 
