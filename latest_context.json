@@ -1,21 +1,24 @@
 {
- "generated_at": "2026-11-13T21:32+07:00",
+ "generated_at": "2026-11-16T22:59+07:00",
  "thermometer": {
-  "label": "Trung tính",
-  "score": -1,
+  "label": "Tiêu cực",
+  "score": -4,
   "signals": [
+   "-1 Chứng khoán Mỹ giảm mạnh",
+   "-1 Châu Á giảm đồng loạt",
+   "-1 Tỷ giá USD/VND tăng nhanh",
    "-1 Xu hướng kỹ thuật giảm (VNI dưới MA20, MA20 dưới MA50)"
   ]
  },
- "ai_view": "Kịch bản: VN-Index nghiêng đi ngang, giằng co quanh MA20 (khoảng 1.736 điểm) và gặp cản ở MA50 (khoảng 1.759 điểm) khi thanh khoản vẫn thấp hơn mức trung bình.\nĐộng lực: NHNN tiếp tục hút ròng qua OMO, trong khi lợi suất Mỹ, DXY và tỷ giá USD/VND cùng tăng, gây sức ép lên dòng tiền dù chủ trương giảm lãi suất cho vay đang hỗ trợ tâm lý.\nDanh mục: Việc MBB chào bán riêng lẻ 200 triệu cổ phiếu giúp tăng vốn và dư địa tăng trưởng tín dụng nhưng có thể tạo áp lực pha loãng ngắn hạn, còn nhóm ngân hàng nói chung có thể chịu áp lực biên lãi khi lãi suất cho vay giảm.\nSai nếu: VN-Index vượt và giữ được trên MA50 với thanh khoản cải thiện rõ, hoặc thủng hẳn MA20 kèm khối lượng bán gia tăng.",
+ "ai_view": "Kịch bản: Nghiêng giảm nhẹ hoặc đi ngang yếu, chỉ số đang nằm dưới MA20 (khoảng 1.739 điểm) và MA50 (khoảng 1.758 điểm), nên hai vùng này là kháng cự cần chú ý.\nĐộng lực: Tâm lý rủi ro toàn cầu xấu đi khi chứng khoán Mỹ và Nhật, Hàn giảm mạnh, VIX tăng vọt, trong khi tỷ giá liên ngân hàng tăng nhanh và NHNN hút ròng qua OMO gây áp lực lên thanh khoản hệ thống.\nDanh mục: Không có tin riêng cho watchlist, nhưng nhóm ngân hàng (VPB, TCB, MBB) dễ chịu sức ép từ tỷ giá và thanh khoản liên ngân hàng căng, còn nhóm chứng khoán (SSI, VPX) nhạy cảm với thanh khoản thị trường đang thấp hơn trung bình.\nSai nếu: VN-Index đóng cửa vượt lại MA20 với thanh khoản cải thiện rõ, khối ngoại ngừng bán ròng và tỷ giá hạ nhiệt.",
  "vnindex": {
-  "last": 1734.93,
-  "pct": 0.010376134889766853,
-  "ma20": 1736.399,
-  "ma50": 1759.2258,
-  "pct5": 0.5546668521352105,
-  "vol_vs_avg": 0.7719442596842357,
-  "date": "2026-11-13"
+  "last": 1736.89,
+  "pct": 0.11297285769455989,
+  "ma20": 1738.7515,
+  "ma50": 1757.5308,
+  "pct5": 1.3165570021933082,
+  "vol_vs_avg": 0.691355930272718,
+  "date": "2026-11-16"
  },
  "vn_money_market": {
   "session": "13/11",
@@ -32,71 +35,69 @@
  "foreign_flow_market": null,
  "markets": {
   "DXY": {
-   "last": 103.27,
-   "pct": 0.09
+   "last": 103.56,
+   "pct": 0.15
   },
   "US10Y": {
-   "last": 5.14,
-   "pct": 0.82
+   "last": 5.12,
+   "pct": -0.6
   },
   "VIX": {
-   "last": 17.97,
-   "pct": -3.9
+   "last": 21.5,
+   "pct": 11.4
   },
   "S&P 500": {
-   "last": 7617.4,
-   "pct": 0.33
+   "last": 7487.12,
+   "pct": -0.99
   },
   "Nasdaq": {
-   "last": 25414.88,
-   "pct": 0.19
+   "last": 24761.27,
+   "pct": -1.49
   },
   "S&P fut (tối nay)": {
-   "last": 7645.25,
-   "pct": 0.39
+   "last": 7498.0,
+   "pct": -1.12
   },
   "Nikkei": {
-   "last": 61142.35,
-   "pct": 0.53
+   "last": 59662.02,
+   "pct": -2.42
   },
   "KOSPI": {
-   "last": 5290.53,
-   "pct": -0.98
+   "last": 5100.5,
+   "pct": -3.59
   },
   "Hang Seng": {
-   "last": 23637.6,
-   "pct": -1.55
+   "last": 23753.84,
+   "pct": 0.49
   },
   "Brent": {
-   "last": 96.82,
-   "pct": 1.04
+   "last": 93.95,
+   "pct": -1.97
   },
   "WTI": {
-   "last": 89.32,
-   "pct": 0.65
+   "last": 87.08,
+   "pct": -1.67
   },
   "Vàng (HĐTL)": {
-   "last": 3886.4,
-   "pct": 0.03
+   "last": 3866.8,
+   "pct": -0.5
   },
   "USD/VND": {
-   "last": 25711.0,
-   "pct": 0.23
+   "last": 25753.0,
+   "pct": 0.31
   },
   "USD/CNY": {
-   "last": 6.66,
-   "pct": -0.14
+   "last": 6.65,
+   "pct": -0.26
   }
  },
- "watchlist_news": [
-  "MBB: MB chào bán riêng lẻ 200 triệu cổ phiếu, dự kiến thu hơn 3.018 tỷ đồng"
- ],
+ "watchlist_news": [],
  "policy_news": [
-  "Thị trường “xanh vỏ, đỏ lòng”, VN-Index thoát hiểm phút cuối",
-  "Thanh tra việc giảm lãi suất ngân hàng ngay tháng 11",
-  "Khối ngoại \"tung\" hơn 300 tỷ gom một cổ phiếu chứng khoán phiên cuối tuần",
-  "Lãi suất cho vay đã giảm, doanh nghiệp còn e ngại gì?",
-  "Muji xin lỗi vì hơn 1 triệu thẻ tín dụng có nguy cơ lộ dữ liệu"
+  "Phó Thống đốc NHNN Phạm Quang Dũng được bầu làm Chủ tịch VCCI",
+  "Ngân hàng Nhà nước chưa mua được USD giao ngay, tỷ giá liên ngân hàng tăng vọt",
+  "SFinance được Ngân hàng Nhà nước chấp thuận tăng vốn điều lệ lên 2.600 tỷ đồng",
+  "Thủ tướng Lê Minh Hưng: Lấy khoa học - công nghệ và đổi mới sáng tạo làm động lực mới cho quan hệ đối tác ASEAN - Hàn Quốc",
+  "Một cổ phiếu Bluechips bị khối ngoại \"xả\" hơn 160 tỷ đồng ngay phiên đầu tuần"
  ],
  "us_events": [
   "25/11 20:30 Core PCE",

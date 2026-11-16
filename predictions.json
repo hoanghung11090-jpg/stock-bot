@@ -1,6 +1,11 @@
 {
  "2026-11-13": {
   "label": "Trung tính",
-  "score": -1
+  "score": -1,
+  "result": "đúng"
+ },
+ "2026-11-16": {
+  "label": "Tiêu cực",
+  "score": -4
  }
 }
