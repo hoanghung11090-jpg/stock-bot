@@ -1,103 +1,103 @@
 {
- "generated_at": "2026-11-16T22:59+07:00",
+ "generated_at": "2026-11-17T21:36+07:00",
  "thermometer": {
   "label": "Tiêu cực",
-  "score": -4,
+  "score": -3,
   "signals": [
-   "-1 Chứng khoán Mỹ giảm mạnh",
    "-1 Châu Á giảm đồng loạt",
-   "-1 Tỷ giá USD/VND tăng nhanh",
+   "-1 Khối ngoại bán ròng mạnh (≥ 500 tỷ)",
    "-1 Xu hướng kỹ thuật giảm (VNI dưới MA20, MA20 dưới MA50)"
   ]
  },
- "ai_view": "Kịch bản: Nghiêng giảm nhẹ hoặc đi ngang yếu, chỉ số đang nằm dưới MA20 (khoảng 1.739 điểm) và MA50 (khoảng 1.758 điểm), nên hai vùng này là kháng cự cần chú ý.\nĐộng lực: Tâm lý rủi ro toàn cầu xấu đi khi chứng khoán Mỹ và Nhật, Hàn giảm mạnh, VIX tăng vọt, trong khi tỷ giá liên ngân hàng tăng nhanh và NHNN hút ròng qua OMO gây áp lực lên thanh khoản hệ thống.\nDanh mục: Không có tin riêng cho watchlist, nhưng nhóm ngân hàng (VPB, TCB, MBB) dễ chịu sức ép từ tỷ giá và thanh khoản liên ngân hàng căng, còn nhóm chứng khoán (SSI, VPX) nhạy cảm với thanh khoản thị trường đang thấp hơn trung bình.\nSai nếu: VN-Index đóng cửa vượt lại MA20 với thanh khoản cải thiện rõ, khối ngoại ngừng bán ròng và tỷ giá hạ nhiệt.",
+ "ai_view": "Kịch bản: Nghiêng giảm hoặc giằng co yếu dưới MA20, với vùng 1.740 là kháng cự gần và 1.755 (MA50) là kháng cự xa hơn.\nĐộng lực: Khối ngoại tiếp tục bán ròng mạnh và việc NHNN nâng tỷ giá trung tâm lên kỷ lục gây áp lực tâm lý, trong khi chứng khoán châu Á đồng loạt giảm sâu.\nDanh mục: Tin lãnh đạo SSI quảng bá thị trường Việt Nam tại Phố Wall chỉ hỗ trợ tâm lý ngắn hạn cho nhóm chứng khoán, còn nhóm ngân hàng như VPB, TCB, MBB vẫn chịu sức ép từ dòng vốn ngoại rút ra.\nSai nếu: VN-Index lấy lại vùng MA20 quanh 1.740 với thanh khoản vượt mức trung bình và khối ngoại giảm bán ròng.",
  "vnindex": {
-  "last": 1736.89,
-  "pct": 0.11297285769455989,
-  "ma20": 1738.7515,
-  "ma50": 1757.5308,
-  "pct5": 1.3165570021933082,
-  "vol_vs_avg": 0.691355930272718,
-  "date": "2026-11-16"
+  "last": 1726.72,
+  "pct": -0.5855293081312052,
+  "ma20": 1740.489,
+  "ma50": 1755.4564,
+  "pct5": -0.9380001950581418,
+  "vol_vs_avg": 0.7523058110679428,
+  "date": "2026-11-17"
  },
- "vn_money_market": {
-  "session": "13/11",
-  "omo": "hút",
-  "omo_bn": "18.153",
-  "overnight": 4.8
- },
+ "vn_money_market": null,
  "deposit_12m": {
   "updated": "2026-11-12",
   "big4": 6.8,
   "max_private": 7.0,
   "max_private_banks": "MBV, PGBank, Sacombank, VCBNeo, VIB"
  },
- "foreign_flow_market": null,
+ "foreign_flow_market": {
+  "side": "bán",
+  "amount": "7.300",
+  "unit": "tỷ"
+ },
  "markets": {
   "DXY": {
-   "last": 103.56,
-   "pct": 0.15
+   "last": 103.61,
+   "pct": 0.06
   },
   "US10Y": {
-   "last": 5.12,
-   "pct": -0.6
+   "last": 5.14,
+   "pct": 0.47
   },
   "VIX": {
-   "last": 21.5,
-   "pct": 11.4
+   "last": 22.88,
+   "pct": -0.13
   },
   "S&P 500": {
-   "last": 7487.12,
-   "pct": -0.99
+   "last": 7396.47,
+   "pct": -0.27
   },
   "Nasdaq": {
-   "last": 24761.27,
-   "pct": -1.49
+   "last": 24452.26,
+   "pct": -0.23
   },
   "S&P fut (tối nay)": {
-   "last": 7498.0,
-   "pct": -1.12
+   "last": 7428.75,
+   "pct": -0.14
   },
   "Nikkei": {
-   "last": 59662.02,
-   "pct": -2.42
+   "last": 58860.43,
+   "pct": -1.34
   },
   "KOSPI": {
-   "last": 5100.5,
-   "pct": -3.59
+   "last": 4968.48,
+   "pct": -2.59
   },
   "Hang Seng": {
-   "last": 23753.84,
-   "pct": 0.49
+   "last": 23508.17,
+   "pct": -1.03
   },
   "Brent": {
-   "last": 93.95,
-   "pct": -1.97
+   "last": 93.93,
+   "pct": 1.61
   },
   "WTI": {
-   "last": 87.08,
-   "pct": -1.67
+   "last": 87.23,
+   "pct": 1.76
   },
   "Vàng (HĐTL)": {
-   "last": 3866.8,
-   "pct": -0.5
+   "last": 3864.9,
+   "pct": 0.31
   },
   "USD/VND": {
-   "last": 25753.0,
-   "pct": 0.31
+   "last": 25705.0,
+   "pct": -0.02
   },
   "USD/CNY": {
    "last": 6.65,
-   "pct": -0.26
+   "pct": -0.25
   }
  },
- "watchlist_news": [],
+ "watchlist_news": [
+  "SSI: Lên sóng trực tiếp giữa Phố Wall, lãnh đạo SSI khẳng định Việt Nam là một trong những thị trường tốt nhất thế giới"
+ ],
  "policy_news": [
-  "Phó Thống đốc NHNN Phạm Quang Dũng được bầu làm Chủ tịch VCCI",
-  "Ngân hàng Nhà nước chưa mua được USD giao ngay, tỷ giá liên ngân hàng tăng vọt",
-  "SFinance được Ngân hàng Nhà nước chấp thuận tăng vốn điều lệ lên 2.600 tỷ đồng",
-  "Thủ tướng Lê Minh Hưng: Lấy khoa học - công nghệ và đổi mới sáng tạo làm động lực mới cho quan hệ đối tác ASEAN - Hàn Quốc",
-  "Một cổ phiếu Bluechips bị khối ngoại \"xả\" hơn 160 tỷ đồng ngay phiên đầu tuần"
+  "Ngân hàng Nhà nước nâng tỷ giá trung tâm lên kỷ lục",
+  "UBCKNN phát thông báo quan trọng tới Novaland",
+  "Phiên 17/11: Khối ngoại tiếp đà bán ròng, \"xả\" mạnh 2 cổ phiếu bluechips",
+  "Cổ phiếu ngân hàng lớn nhất sàn chứng khoán Việt Nam rơi xuống đáy 19 tháng: Khối ngoại bán ròng hơn 7.300 tỷ đồng, thị giá giảm gần 31% từ đỉnh",
+  "VN-Index có thể hướng tới 1.870 điểm, CTCK “chọn mặt gửi vàng” loạt cổ phiếu ngân hàng, chứng khoán, bất động sản"
  ],
  "us_events": [
   "25/11 20:30 Core PCE",

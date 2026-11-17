@@ -6,6 +6,11 @@
  },
  "2026-11-16": {
   "label": "Tiêu cực",
-  "score": -4
+  "score": -4,
+  "result": "đúng"
+ },
+ "2026-11-17": {
+  "label": "Tiêu cực",
+  "score": -3
  }
 }
