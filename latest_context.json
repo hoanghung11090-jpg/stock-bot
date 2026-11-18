@@ -1,103 +1,106 @@
 {
- "generated_at": "2026-11-17T21:36+07:00",
+ "generated_at": "2026-11-18T21:32+07:00",
  "thermometer": {
-  "label": "Tiêu cực",
-  "score": -3,
+  "label": "Trung tính",
+  "score": -1,
   "signals": [
-   "-1 Châu Á giảm đồng loạt",
-   "-1 Khối ngoại bán ròng mạnh (≥ 500 tỷ)",
+   "-1 Lãi suất qua đêm ≥ 5% (thanh khoản hệ thống căng)",
+   "+1 NHNN bơm ròng qua OMO",
    "-1 Xu hướng kỹ thuật giảm (VNI dưới MA20, MA20 dưới MA50)"
   ]
  },
- "ai_view": "Kịch bản: Nghiêng giảm hoặc giằng co yếu dưới MA20, với vùng 1.740 là kháng cự gần và 1.755 (MA50) là kháng cự xa hơn.\nĐộng lực: Khối ngoại tiếp tục bán ròng mạnh và việc NHNN nâng tỷ giá trung tâm lên kỷ lục gây áp lực tâm lý, trong khi chứng khoán châu Á đồng loạt giảm sâu.\nDanh mục: Tin lãnh đạo SSI quảng bá thị trường Việt Nam tại Phố Wall chỉ hỗ trợ tâm lý ngắn hạn cho nhóm chứng khoán, còn nhóm ngân hàng như VPB, TCB, MBB vẫn chịu sức ép từ dòng vốn ngoại rút ra.\nSai nếu: VN-Index lấy lại vùng MA20 quanh 1.740 với thanh khoản vượt mức trung bình và khối ngoại giảm bán ròng.",
+ "ai_view": "Kịch bản: Nghiêng đi ngang đến giảm nhẹ, VN-Index kiểm định vùng hỗ trợ tâm lý 1.700 điểm, còn vùng MA20 (khoảng 1.739) và MA50 (khoảng 1.753) là kháng cự gần.\nĐộng lực: Khối ngoại bán ròng mạnh gây áp lực, nhưng việc NHNN bơm ròng qua OMO và tỷ giá USD/VND hạ nhiệt phần nào hỗ trợ thanh khoản và tâm lý.\nDanh mục: Tin VPX chốt ngày chia thưởng cổ phiếu tỷ lệ 45% có thể hỗ trợ tâm lý ngắn hạn cho nhóm chứng khoán, còn tin nhân sự và thương hiệu của TCB ít tác động đến giá.\nSai nếu: VN-Index thủng dứt khoát 1.700 điểm với thanh khoản tăng vọt và khối ngoại tiếp tục bán mạnh, hoặc ngược lại bật nhanh vượt MA20.",
  "vnindex": {
-  "last": 1726.72,
-  "pct": -0.5855293081312052,
-  "ma20": 1740.489,
-  "ma50": 1755.4564,
-  "pct5": -0.9380001950581418,
-  "vol_vs_avg": 0.7523058110679428,
-  "date": "2026-11-17"
+  "last": 1703.01,
+  "pct": -1.3731236100815392,
+  "ma20": 1738.706,
+  "ma50": 1752.9742,
+  "pct5": -2.5124506268246694,
+  "vol_vs_avg": 0.916291638931762,
+  "date": "2026-11-18"
  },
- "vn_money_market": null,
+ "vn_money_market": {
+  "session": "16/11",
+  "omo": "bơm",
+  "omo_bn": "5.262",
+  "overnight": 5.6
+ },
  "deposit_12m": {
   "updated": "2026-11-12",
   "big4": 6.8,
   "max_private": 7.0,
   "max_private_banks": "MBV, PGBank, Sacombank, VCBNeo, VIB"
  },
- "foreign_flow_market": {
-  "side": "bán",
-  "amount": "7.300",
-  "unit": "tỷ"
- },
+ "foreign_flow_market": null,
  "markets": {
   "DXY": {
-   "last": 103.61,
-   "pct": 0.06
+   "last": 103.8,
+   "pct": 0.3
   },
   "US10Y": {
-   "last": 5.14,
-   "pct": 0.47
+   "last": 5.09,
+   "pct": -0.24
   },
   "VIX": {
-   "last": 22.88,
-   "pct": -0.13
+   "last": 24.3,
+   "pct": -4.56
   },
   "S&P 500": {
-   "last": 7396.47,
-   "pct": -0.27
+   "last": 7363.07,
+   "pct": 0.31
   },
   "Nasdaq": {
-   "last": 24452.26,
-   "pct": -0.23
+   "last": 24511.67,
+   "pct": 0.75
   },
   "S&P fut (tối nay)": {
-   "last": 7428.75,
-   "pct": -0.14
+   "last": 7371.5,
+   "pct": 0.17
   },
   "Nikkei": {
-   "last": 58860.43,
-   "pct": -1.34
+   "last": 59024.28,
+   "pct": 0.28
   },
   "KOSPI": {
-   "last": 4968.48,
-   "pct": -2.59
+   "last": 5067.44,
+   "pct": 1.99
   },
   "Hang Seng": {
-   "last": 23508.17,
-   "pct": -1.03
+   "last": 23294.75,
+   "pct": -0.91
   },
   "Brent": {
-   "last": 93.93,
-   "pct": 1.61
+   "last": 89.82,
+   "pct": -3.56
   },
   "WTI": {
-   "last": 87.23,
-   "pct": 1.76
+   "last": 83.82,
+   "pct": -2.55
   },
   "Vàng (HĐTL)": {
-   "last": 3864.9,
-   "pct": 0.31
+   "last": 3779.7,
+   "pct": -2.19
   },
   "USD/VND": {
    "last": 25705.0,
-   "pct": -0.02
+   "pct": -0.19
   },
   "USD/CNY": {
-   "last": 6.65,
-   "pct": -0.25
+   "last": 6.67,
+   "pct": 0.06
   }
  },
  "watchlist_news": [
-  "SSI: Lên sóng trực tiếp giữa Phố Wall, lãnh đạo SSI khẳng định Việt Nam là một trong những thị trường tốt nhất thế giới"
+  "TCB: Chân dung tân Giám đốc Tài chính Eximbank: 15 năm gắn bó với hệ sinh thái Techcombank, từng giữ chức Phó Tổng Giám đốc TCBS",
+  "TCB: Techcombank và Techcombank OneU góp phần thắp sáng bản đồ \"Việt Nam Rực Rỡ\" thu hút gần 1000 câu chuyện tích cực",
+  "VPX: VPBankS chốt ngày chia cổ phiếu thưởng tỷ lệ 45%"
  ],
  "policy_news": [
-  "Ngân hàng Nhà nước nâng tỷ giá trung tâm lên kỷ lục",
-  "UBCKNN phát thông báo quan trọng tới Novaland",
-  "Phiên 17/11: Khối ngoại tiếp đà bán ròng, \"xả\" mạnh 2 cổ phiếu bluechips",
-  "Cổ phiếu ngân hàng lớn nhất sàn chứng khoán Việt Nam rơi xuống đáy 19 tháng: Khối ngoại bán ròng hơn 7.300 tỷ đồng, thị giá giảm gần 31% từ đỉnh",
-  "VN-Index có thể hướng tới 1.870 điểm, CTCK “chọn mặt gửi vàng” loạt cổ phiếu ngân hàng, chứng khoán, bất động sản"
+  "Khối ngoại thẳng tay bán ròng hơn 1.100 tỷ đồng trong ngày VN-Index giảm sâu, \"xả\" mạnh loạt cổ phiếu hot",
+  "Phó Thủ tướng Hồ Quốc Dũng gặp các đối tác quốc tế, thúc đẩy hợp tác ứng phó với biến đổi khí hậu",
+  "Chứng khoán đỏ lửa, VN-Index rơi sát mốc 1.700 điểm",
+  "Giải ngân vốn đầu tư công vượt 75% kế hoạch",
+  "VN-Index giảm hơn 23 điểm"
  ],
  "us_events": [
   "25/11 20:30 Core PCE",
