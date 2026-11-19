@@ -1,23 +1,24 @@
 {
- "generated_at": "2026-11-18T21:32+07:00",
+ "generated_at": "2026-11-19T21:34+07:00",
  "thermometer": {
   "label": "Trung tính",
-  "score": -1,
+  "score": 0,
   "signals": [
+   "+1 Chứng khoán Mỹ tăng mạnh",
    "-1 Lãi suất qua đêm ≥ 5% (thanh khoản hệ thống căng)",
    "+1 NHNN bơm ròng qua OMO",
    "-1 Xu hướng kỹ thuật giảm (VNI dưới MA20, MA20 dưới MA50)"
   ]
  },
- "ai_view": "Kịch bản: Nghiêng đi ngang đến giảm nhẹ, VN-Index kiểm định vùng hỗ trợ tâm lý 1.700 điểm, còn vùng MA20 (khoảng 1.739) và MA50 (khoảng 1.753) là kháng cự gần.\nĐộng lực: Khối ngoại bán ròng mạnh gây áp lực, nhưng việc NHNN bơm ròng qua OMO và tỷ giá USD/VND hạ nhiệt phần nào hỗ trợ thanh khoản và tâm lý.\nDanh mục: Tin VPX chốt ngày chia thưởng cổ phiếu tỷ lệ 45% có thể hỗ trợ tâm lý ngắn hạn cho nhóm chứng khoán, còn tin nhân sự và thương hiệu của TCB ít tác động đến giá.\nSai nếu: VN-Index thủng dứt khoát 1.700 điểm với thanh khoản tăng vọt và khối ngoại tiếp tục bán mạnh, hoặc ngược lại bật nhanh vượt MA20.",
+ "ai_view": "Kịch bản: Nghiêng đi ngang với khả năng hồi kỹ thuật quanh mốc 1.700, trong khi MA20 (~1.735) và MA50 (~1.750) vẫn là vùng kháng cự lớn phía trên.\nĐộng lực: Tâm lý được hỗ trợ khi Phố Wall tăng mạnh, VIX hạ nhiệt và NHNN bơm ròng qua OMO kèm định hướng giảm lãi suất cho vay, nhưng lợi suất US10Y nhích lên và thanh khoản thấp kìm sức bật.\nDanh mục: Tin VPBank Private mang tính chiến lược dài hạn nên ít tác động ngắn hạn tới VPB, trong khi nhóm ngân hàng (VPB, TCB, MBB) hưởng lợi gián tiếp từ thông điệp lãi suất và nhóm chứng khoán (VPX, SSI) vẫn nhạy với thanh khoản yếu.\nSai nếu: VN-Index tiếp tục giảm sâu dưới 1.700 với thanh khoản tăng mạnh, hoặc ngược lại bứt phá lên vùng MA20 nhờ dòng tiền cải thiện rõ rệt.",
  "vnindex": {
-  "last": 1703.01,
-  "pct": -1.3731236100815392,
-  "ma20": 1738.706,
-  "ma50": 1752.9742,
-  "pct5": -2.5124506268246694,
-  "vol_vs_avg": 0.916291638931762,
-  "date": "2026-11-18"
+  "last": 1689.62,
+  "pct": -0.7862549251032025,
+  "ma20": 1735.1555,
+  "ma50": 1750.182,
+  "pct5": -2.601527597636555,
+  "vol_vs_avg": 0.7899285487964516,
+  "date": "2026-11-19"
  },
  "vn_money_market": {
   "session": "16/11",
@@ -34,73 +35,71 @@
  "foreign_flow_market": null,
  "markets": {
   "DXY": {
-   "last": 103.8,
-   "pct": 0.3
+   "last": 103.66,
+   "pct": -0.2
   },
   "US10Y": {
    "last": 5.09,
-   "pct": -0.24
+   "pct": 0.49
   },
   "VIX": {
-   "last": 24.3,
-   "pct": -4.56
+   "last": 22.37,
+   "pct": -8.92
   },
   "S&P 500": {
-   "last": 7363.07,
-   "pct": 0.31
+   "last": 7415.32,
+   "pct": 1.25
   },
   "Nasdaq": {
-   "last": 24511.67,
-   "pct": 0.75
+   "last": 24930.78,
+   "pct": 2.05
   },
   "S&P fut (tối nay)": {
-   "last": 7371.5,
-   "pct": 0.17
+   "last": 7416.5,
+   "pct": 1.04
   },
   "Nikkei": {
-   "last": 59024.28,
-   "pct": 0.28
+   "last": 59444.21,
+   "pct": 0.71
   },
   "KOSPI": {
-   "last": 5067.44,
-   "pct": 1.99
+   "last": 5137.89,
+   "pct": 1.39
   },
   "Hang Seng": {
-   "last": 23294.75,
-   "pct": -0.91
+   "last": 22841.62,
+   "pct": -1.95
   },
   "Brent": {
-   "last": 89.82,
-   "pct": -3.56
+   "last": 90.33,
+   "pct": -1.76
   },
   "WTI": {
-   "last": 83.82,
-   "pct": -2.55
+   "last": 83.65,
+   "pct": 0.47
   },
   "Vàng (HĐTL)": {
-   "last": 3779.7,
-   "pct": -2.19
+   "last": 3708.7,
+   "pct": -0.89
   },
   "USD/VND": {
    "last": 25705.0,
-   "pct": -0.19
+   "pct": 0.0
   },
   "USD/CNY": {
-   "last": 6.67,
-   "pct": 0.06
+   "last": 6.66,
+   "pct": -0.13
   }
  },
  "watchlist_news": [
-  "TCB: Chân dung tân Giám đốc Tài chính Eximbank: 15 năm gắn bó với hệ sinh thái Techcombank, từng giữ chức Phó Tổng Giám đốc TCBS",
-  "TCB: Techcombank và Techcombank OneU góp phần thắp sáng bản đồ \"Việt Nam Rực Rỡ\" thu hút gần 1000 câu chuyện tích cực",
-  "VPX: VPBankS chốt ngày chia cổ phiếu thưởng tỷ lệ 45%"
+  "VPB: Từ Kiến tạo Thịnh vượng đến Thịnh vượng Trường tồn: VPBank Private hướng tới vai trò “Kiến trúc sư gia sản”"
  ],
  "policy_news": [
-  "Khối ngoại thẳng tay bán ròng hơn 1.100 tỷ đồng trong ngày VN-Index giảm sâu, \"xả\" mạnh loạt cổ phiếu hot",
-  "Phó Thủ tướng Hồ Quốc Dũng gặp các đối tác quốc tế, thúc đẩy hợp tác ứng phó với biến đổi khí hậu",
-  "Chứng khoán đỏ lửa, VN-Index rơi sát mốc 1.700 điểm",
-  "Giải ngân vốn đầu tư công vượt 75% kế hoạch",
-  "VN-Index giảm hơn 23 điểm"
+  "Vay qua thẻ phù hợp khả năng chi trả, góp phần đẩy lùi tín dụng đen",
+  "Làm việc với tỉnh Hưng Yên, Phó Thống đốc Phạm Thanh Hà cho biết NHNN sẽ yêu cầu các TCTD trên địa bàn tiếp tục giữ ổn định mặt bằng lãi suất và phấn đấu giảm lãi suất cho vay",
+  "Chiến lược phòng vệ tỷ giá cho doanh nghiệp mùa cuối năm",
+  "VN-Index mất mốc 1.700 điểm, thanh khoản xuống thấp",
+  "Tín dụng đen: Công nhân thường xuyên bị đòi nợ, gây sức ép"
  ],
  "us_events": [
   "25/11 20:30 Core PCE",
