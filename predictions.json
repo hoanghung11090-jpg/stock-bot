@@ -21,6 +21,11 @@
  },
  "2026-11-19": {
   "label": "Trung tính",
-  "score": 0
+  "score": 0,
+  "result": "đúng"
+ },
+ "2026-11-20": {
+  "label": "Tiêu cực",
+  "score": -4
  }
 }

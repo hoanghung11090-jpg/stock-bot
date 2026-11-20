@@ -1,24 +1,26 @@
 {
- "generated_at": "2026-11-19T21:34+07:00",
+ "generated_at": "2026-11-20T21:33+07:00",
  "thermometer": {
-  "label": "Trung tính",
-  "score": 0,
+  "label": "Tiêu cực",
+  "score": -4,
   "signals": [
-   "+1 Chứng khoán Mỹ tăng mạnh",
+   "-1 VIX > 25 (thị trường toàn cầu sợ hãi)",
+   "-1 Châu Á giảm đồng loạt",
    "-1 Lãi suất qua đêm ≥ 5% (thanh khoản hệ thống căng)",
    "+1 NHNN bơm ròng qua OMO",
+   "-1 Khối ngoại bán ròng mạnh (≥ 500 tỷ)",
    "-1 Xu hướng kỹ thuật giảm (VNI dưới MA20, MA20 dưới MA50)"
   ]
  },
- "ai_view": "Kịch bản: Nghiêng đi ngang với khả năng hồi kỹ thuật quanh mốc 1.700, trong khi MA20 (~1.735) và MA50 (~1.750) vẫn là vùng kháng cự lớn phía trên.\nĐộng lực: Tâm lý được hỗ trợ khi Phố Wall tăng mạnh, VIX hạ nhiệt và NHNN bơm ròng qua OMO kèm định hướng giảm lãi suất cho vay, nhưng lợi suất US10Y nhích lên và thanh khoản thấp kìm sức bật.\nDanh mục: Tin VPBank Private mang tính chiến lược dài hạn nên ít tác động ngắn hạn tới VPB, trong khi nhóm ngân hàng (VPB, TCB, MBB) hưởng lợi gián tiếp từ thông điệp lãi suất và nhóm chứng khoán (VPX, SSI) vẫn nhạy với thanh khoản yếu.\nSai nếu: VN-Index tiếp tục giảm sâu dưới 1.700 với thanh khoản tăng mạnh, hoặc ngược lại bứt phá lên vùng MA20 nhờ dòng tiền cải thiện rõ rệt.",
+ "ai_view": "Kịch bản: Nghiêng giảm khi VN-Index nằm dưới cả MA20 (khoảng 1.731) và MA50 (khoảng 1.748), nên vùng 1.731–1.748 là kháng cự then chốt cho mọi nhịp hồi.\nĐộng lực: Khối ngoại bán ròng kỷ lục từ đầu năm cùng phiên giảm mạnh của Nikkei và KOSPI, kèm VIX tăng, đang đè nặng tâm lý trong nước.\nDanh mục: Tin TCB tài trợ sự kiện văn hóa và tin cá nhân Singapore nâng sở hữu tại công ty tài sản số liên quan VPBank chủ yếu mang tính hình ảnh, khó đủ sức giúp TCB, VPB, MBB hay SSI và VPX đi ngược áp lực bán chung lên nhóm ngân hàng và chứng khoán.\nSai nếu: VN-Index vượt lại MA20 với thanh khoản cao hơn mức trung bình, đồng thời khối ngoại chuyển sang mua ròng.",
  "vnindex": {
-  "last": 1689.62,
-  "pct": -0.7862549251032025,
-  "ma20": 1735.1555,
-  "ma50": 1750.182,
-  "pct5": -2.601527597636555,
-  "vol_vs_avg": 0.7899285487964516,
-  "date": "2026-11-19"
+  "last": 1688.79,
+  "pct": -0.04912347154981678,
+  "ma20": 1730.8875,
+  "ma50": 1748.0536,
+  "pct5": -2.6594732928706066,
+  "vol_vs_avg": 0.9342500595443252,
+  "date": "2026-11-20"
  },
  "vn_money_market": {
   "session": "16/11",
@@ -32,74 +34,79 @@
   "max_private": 7.0,
   "max_private_banks": "MBV, PGBank, Sacombank, VCBNeo, VIB"
  },
- "foreign_flow_market": null,
+ "foreign_flow_market": {
+  "side": "bán",
+  "amount": "126.000",
+  "unit": "tỷ"
+ },
  "markets": {
   "DXY": {
-   "last": 103.66,
+   "last": 103.69,
    "pct": -0.2
   },
   "US10Y": {
-   "last": 5.09,
-   "pct": 0.49
+   "last": 4.99,
+   "pct": -1.31
   },
   "VIX": {
-   "last": 22.37,
-   "pct": -8.92
+   "last": 29.68,
+   "pct": 4.36
   },
   "S&P 500": {
-   "last": 7415.32,
-   "pct": 1.25
+   "last": 7139.34,
+   "pct": -0.51
   },
   "Nasdaq": {
-   "last": 24930.78,
-   "pct": 2.05
+   "last": 23540.71,
+   "pct": -1.42
   },
   "S&P fut (tối nay)": {
-   "last": 7416.5,
-   "pct": 1.04
+   "last": 7156.5,
+   "pct": -0.57
   },
   "Nikkei": {
-   "last": 59444.21,
-   "pct": 0.71
+   "last": 56436.65,
+   "pct": -5.06
   },
   "KOSPI": {
-   "last": 5137.89,
-   "pct": 1.39
+   "last": 4869.96,
+   "pct": -5.21
   },
   "Hang Seng": {
-   "last": 22841.62,
-   "pct": -1.95
+   "last": 22410.8,
+   "pct": -1.89
   },
   "Brent": {
-   "last": 90.33,
-   "pct": -1.76
+   "last": 88.77,
+   "pct": -3.49
   },
   "WTI": {
-   "last": 83.65,
-   "pct": 0.47
+   "last": 82.02,
+   "pct": -1.43
   },
   "Vàng (HĐTL)": {
-   "last": 3708.7,
-   "pct": -0.89
+   "last": 3578.0,
+   "pct": -2.92
   },
   "USD/VND": {
    "last": 25705.0,
-   "pct": 0.0
+   "pct": 0.06
   },
   "USD/CNY": {
    "last": 6.66,
-   "pct": -0.13
+   "pct": -0.09
   }
  },
  "watchlist_news": [
-  "VPB: Từ Kiến tạo Thịnh vượng đến Thịnh vượng Trường tồn: VPBank Private hướng tới vai trò “Kiến trúc sư gia sản”"
+  "TCB: Techcombank và Masterise Group đồng tài trợ độc quyền đưa di sản giao hưởng St. Petersburg Symphony Night trở lại Việt Nam",
+  "VPB: Một cá nhân Singapore nâng sở hữu tại công ty tài sản số liên quan VPBank"
  ],
  "policy_news": [
-  "Vay qua thẻ phù hợp khả năng chi trả, góp phần đẩy lùi tín dụng đen",
-  "Làm việc với tỉnh Hưng Yên, Phó Thống đốc Phạm Thanh Hà cho biết NHNN sẽ yêu cầu các TCTD trên địa bàn tiếp tục giữ ổn định mặt bằng lãi suất và phấn đấu giảm lãi suất cho vay",
-  "Chiến lược phòng vệ tỷ giá cho doanh nghiệp mùa cuối năm",
-  "VN-Index mất mốc 1.700 điểm, thanh khoản xuống thấp",
-  "Tín dụng đen: Công nhân thường xuyên bị đòi nợ, gây sức ép"
+  "Phó Thủ tướng Lê Tiến Châu: Thiết lập cơ chế phòng ngừa rủi ro giá, phát triển thị trường hàng hóa phái sinh",
+  "Phiên 20/11: Khối ngoại thẳng tay bán ròng gần 900 tỷ đồng, xả mạnh FPT cùng loạt cổ phiếu ngân hàng hot",
+  "Xem xét ban hành chính sách đặc thù xử lý xóa tiền thuế nợ cho người nộp thuế",
+  "Cục Thuế nâng cao kỹ năng phân tích báo cáo tài chính với doanh nghiệp bất động sản",
+  "Khối ngoại bán ròng 126.000 tỷ từ đầu năm 2026, kỷ lục chưa từng có"
  ],
  "us_events": [
   "25/11 20:30 Core PCE",
