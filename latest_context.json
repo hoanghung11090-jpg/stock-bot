@@ -1,112 +1,101 @@
 {
- "generated_at": "2026-11-20T21:33+07:00",
+ "generated_at": "2026-11-23T21:43+07:00",
  "thermometer": {
   "label": "Tiêu cực",
-  "score": -4,
+  "score": -2,
   "signals": [
    "-1 VIX > 25 (thị trường toàn cầu sợ hãi)",
+   "+1 Chứng khoán Mỹ tăng mạnh",
    "-1 Châu Á giảm đồng loạt",
-   "-1 Lãi suất qua đêm ≥ 5% (thanh khoản hệ thống căng)",
-   "+1 NHNN bơm ròng qua OMO",
-   "-1 Khối ngoại bán ròng mạnh (≥ 500 tỷ)",
    "-1 Xu hướng kỹ thuật giảm (VNI dưới MA20, MA20 dưới MA50)"
   ]
  },
- "ai_view": "Kịch bản: Nghiêng giảm khi VN-Index nằm dưới cả MA20 (khoảng 1.731) và MA50 (khoảng 1.748), nên vùng 1.731–1.748 là kháng cự then chốt cho mọi nhịp hồi.\nĐộng lực: Khối ngoại bán ròng kỷ lục từ đầu năm cùng phiên giảm mạnh của Nikkei và KOSPI, kèm VIX tăng, đang đè nặng tâm lý trong nước.\nDanh mục: Tin TCB tài trợ sự kiện văn hóa và tin cá nhân Singapore nâng sở hữu tại công ty tài sản số liên quan VPBank chủ yếu mang tính hình ảnh, khó đủ sức giúp TCB, VPB, MBB hay SSI và VPX đi ngược áp lực bán chung lên nhóm ngân hàng và chứng khoán.\nSai nếu: VN-Index vượt lại MA20 với thanh khoản cao hơn mức trung bình, đồng thời khối ngoại chuyển sang mua ròng.",
+ "ai_view": "Kịch bản: VN-Index nghiêng đi ngang đến giảm, với vùng kháng cự gần MA20 khoảng 1.727 điểm và xa hơn là MA50 khoảng 1.746 điểm.\nĐộng lực: Áp lực tỷ giá khi tỷ giá trung tâm lập kỷ lục mới, cùng việc khối ngoại tiếp tục bán ròng, có thể lấn át tín hiệu tích cực từ Phố Wall và lãi suất trái phiếu chính phủ giảm.\nDanh mục: Tin quỹ của SSI nâng tỷ trọng tiền mặt lên gần 40% phản ánh tâm lý thận trọng, có thể đè nặng nhóm chứng khoán như SSI, còn tin quản lý gia sản của VPB ít tác động ngắn hạn.\nSai nếu: Chỉ số vượt lên trên MA20 với thanh khoản cải thiện rõ so với bình quân và khối ngoại chuyển sang mua ròng.",
  "vnindex": {
-  "last": 1688.79,
-  "pct": -0.04912347154981678,
-  "ma20": 1730.8875,
-  "ma50": 1748.0536,
-  "pct5": -2.6594732928706066,
-  "vol_vs_avg": 0.9342500595443252,
-  "date": "2026-11-20"
+  "last": 1697.14,
+  "pct": 0.49443684531529364,
+  "ma20": 1727.567,
+  "ma50": 1746.2318,
+  "pct5": -2.2885732544951076,
+  "vol_vs_avg": 0.7576991780137455,
+  "date": "2026-11-23"
  },
- "vn_money_market": {
-  "session": "16/11",
-  "omo": "bơm",
-  "omo_bn": "5.262",
-  "overnight": 5.6
- },
+ "vn_money_market": null,
  "deposit_12m": {
   "updated": "2026-11-12",
   "big4": 6.8,
   "max_private": 7.0,
   "max_private_banks": "MBV, PGBank, Sacombank, VCBNeo, VIB"
  },
- "foreign_flow_market": {
-  "side": "bán",
-  "amount": "126.000",
-  "unit": "tỷ"
- },
+ "foreign_flow_market": null,
  "markets": {
   "DXY": {
-   "last": 103.69,
-   "pct": -0.2
+   "last": 104.1,
+   "pct": 0.28
   },
   "US10Y": {
-   "last": 4.99,
-   "pct": -1.31
+   "last": 4.98,
+   "pct": 1.3
   },
   "VIX": {
-   "last": 29.68,
-   "pct": 4.36
+   "last": 26.76,
+   "pct": -25.44
   },
   "S&P 500": {
-   "last": 7139.34,
-   "pct": -0.51
+   "last": 7188.12,
+   "pct": 4.02
   },
   "Nasdaq": {
-   "last": 23540.71,
-   "pct": -1.42
+   "last": 23941.83,
+   "pct": 5.85
   },
   "S&P fut (tối nay)": {
-   "last": 7156.5,
-   "pct": -0.57
+   "last": 7236.5,
+   "pct": 4.35
   },
   "Nikkei": {
    "last": 56436.65,
    "pct": -5.06
   },
   "KOSPI": {
-   "last": 4869.96,
-   "pct": -5.21
+   "last": 4708.54,
+   "pct": -3.31
   },
   "Hang Seng": {
-   "last": 22410.8,
-   "pct": -1.89
+   "last": 22383.74,
+   "pct": -0.12
   },
   "Brent": {
-   "last": 88.77,
-   "pct": -3.49
+   "last": 88.17,
+   "pct": -4.75
   },
   "WTI": {
-   "last": 82.02,
-   "pct": -1.43
+   "last": 81.99,
+   "pct": -2.37
   },
   "Vàng (HĐTL)": {
-   "last": 3578.0,
-   "pct": -2.92
+   "last": 3681.2,
+   "pct": 4.72
   },
   "USD/VND": {
    "last": 25705.0,
-   "pct": 0.06
+   "pct": -0.16
   },
   "USD/CNY": {
-   "last": 6.66,
-   "pct": -0.09
+   "last": 6.65,
+   "pct": -0.18
   }
  },
  "watchlist_news": [
-  "TCB: Techcombank và Masterise Group đồng tài trợ độc quyền đưa di sản giao hưởng St. Petersburg Symphony Night trở lại Việt Nam",
-  "VPB: Một cá nhân Singapore nâng sở hữu tại công ty tài sản số liên quan VPBank"
+  "SSI: Quỹ đầu tư của SSI bán sạch ACB, VCI, Vinhomes, giảm gần 90% cổ phiếu FPT và nắm gần 40% tài sản bằng tiền mặt",
+  "VPB: VPBank đưa chuẩn mực quản lý gia sản toàn cầu đến với gia đình Việt"
  ],
  "policy_news": [
-  "Phó Thủ tướng Lê Tiến Châu: Thiết lập cơ chế phòng ngừa rủi ro giá, phát triển thị trường hàng hóa phái sinh",
-  "Phiên 20/11: Khối ngoại thẳng tay bán ròng gần 900 tỷ đồng, xả mạnh FPT cùng loạt cổ phiếu ngân hàng hot",
-  "Xem xét ban hành chính sách đặc thù xử lý xóa tiền thuế nợ cho người nộp thuế",
-  "Cục Thuế nâng cao kỹ năng phân tích báo cáo tài chính với doanh nghiệp bất động sản",
-  "Khối ngoại bán ròng 126.000 tỷ từ đầu năm 2026, kỷ lục chưa từng có"
+  "Gỡ vướng nợ thuế kéo dài, đẩy nhanh xử lý mã số thuế tồn đọng",
+  "Thủ tục hải quan và chính sách thuế đối với hàng hóa xuất, nhập khẩu qua nền tảng thương mại điện tử",
+  "Phiên 23/11: Khối ngoại tiếp tục bán ròng, bất ngờ tung gần 200 tỷ đồng gom một cổ phiếu HOSE",
+  "Tỷ giá trung tâm lập kỷ lục mới",
+  "Trái phiếu chính phủ lần đầu giảm lãi suất trong năm nay"
  ],
  "us_events": [
   "25/11 20:30 Core PCE",
