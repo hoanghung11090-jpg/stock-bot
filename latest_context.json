@@ -1,16 +1,17 @@
 {
- "generated_at": "2026-11-23T21:43+07:00",
+ "generated_at": "2026-11-24T21:39+07:00",
  "thermometer": {
-  "label": "Tiêu cực",
-  "score": -2,
+  "label": "Trung tính",
+  "score": -1,
   "signals": [
    "-1 VIX > 25 (thị trường toàn cầu sợ hãi)",
-   "+1 Chứng khoán Mỹ tăng mạnh",
-   "-1 Châu Á giảm đồng loạt",
+   "-1 Chứng khoán Mỹ giảm mạnh",
+   "+1 Châu Á tăng đồng loạt",
+   "+1 NHNN bơm ròng qua OMO",
    "-1 Xu hướng kỹ thuật giảm (VNI dưới MA20, MA20 dưới MA50)"
   ]
  },
- "ai_view": "Kịch bản: VN-Index nghiêng đi ngang đến giảm, với vùng kháng cự gần MA20 khoảng 1.727 điểm và xa hơn là MA50 khoảng 1.746 điểm.\nĐộng lực: Áp lực tỷ giá khi tỷ giá trung tâm lập kỷ lục mới, cùng việc khối ngoại tiếp tục bán ròng, có thể lấn át tín hiệu tích cực từ Phố Wall và lãi suất trái phiếu chính phủ giảm.\nDanh mục: Tin quỹ của SSI nâng tỷ trọng tiền mặt lên gần 40% phản ánh tâm lý thận trọng, có thể đè nặng nhóm chứng khoán như SSI, còn tin quản lý gia sản của VPB ít tác động ngắn hạn.\nSai nếu: Chỉ số vượt lên trên MA20 với thanh khoản cải thiện rõ so với bình quân và khối ngoại chuyển sang mua ròng.",
+ "ai_view": "Kịch bản: Nghiêng đi ngang đến giảm nhẹ quanh vùng 1.697 điểm, với kháng cự gần tại MA20 khoảng 1.727 điểm và kháng cự xa tại MA50 khoảng 1.746 điểm.\nĐộng lực: Phố Wall giảm và VIX tăng mạnh gây áp lực lên tâm lý, dù việc NHNN bơm ròng qua OMO cùng DXY suy yếu giúp hỗ trợ thanh khoản và tỷ giá.\nDanh mục: Không có tin riêng cho VPB, VPX, TCB, MBB, SSI, nên nhóm ngân hàng hưởng lợi gián tiếp từ thanh khoản hệ thống dồi dào, còn nhóm chứng khoán chịu ảnh hưởng của thanh khoản thị trường đang thấp hơn mức trung bình.\nSai nếu: VN-Index bứt phá và đóng cửa trên MA20 với thanh khoản vượt mức trung bình.",
  "vnindex": {
   "last": 1697.14,
   "pct": 0.49443684531529364,
@@ -20,7 +21,12 @@
   "vol_vs_avg": 0.7576991780137455,
   "date": "2026-11-23"
  },
- "vn_money_market": null,
+ "vn_money_market": {
+  "session": "23/11",
+  "omo": "bơm",
+  "omo_bn": "7.260",
+  "overnight": 4.5
+ },
  "deposit_12m": {
   "updated": "2026-11-12",
   "big4": 6.8,
@@ -30,72 +36,69 @@
  "foreign_flow_market": null,
  "markets": {
   "DXY": {
-   "last": 104.1,
-   "pct": 0.28
+   "last": 103.83,
+   "pct": -0.47
   },
   "US10Y": {
-   "last": 4.98,
-   "pct": 1.3
+   "last": 4.9,
+   "pct": -0.37
   },
   "VIX": {
-   "last": 26.76,
-   "pct": -25.44
+   "last": 29.36,
+   "pct": 10.29
   },
   "S&P 500": {
-   "last": 7188.12,
-   "pct": 4.02
+   "last": 7154.5,
+   "pct": -1.14
   },
   "Nasdaq": {
-   "last": 23941.83,
-   "pct": 5.85
+   "last": 23631.77,
+   "pct": -1.9
   },
   "S&P fut (tối nay)": {
-   "last": 7236.5,
-   "pct": 4.35
+   "last": 7179.0,
+   "pct": -1.04
   },
   "Nikkei": {
-   "last": 56436.65,
-   "pct": -5.06
+   "last": 58644.63,
+   "pct": 3.91
   },
   "KOSPI": {
-   "last": 4708.54,
-   "pct": -3.31
+   "last": 5006.03,
+   "pct": 6.32
   },
   "Hang Seng": {
-   "last": 22383.74,
-   "pct": -0.12
+   "last": 22219.65,
+   "pct": -0.73
   },
   "Brent": {
-   "last": 88.17,
-   "pct": -4.75
+   "last": 88.01,
+   "pct": -1.52
   },
   "WTI": {
-   "last": 81.99,
-   "pct": -2.37
+   "last": 81.26,
+   "pct": 1.36
   },
   "Vàng (HĐTL)": {
-   "last": 3681.2,
-   "pct": 4.72
+   "last": 3617.9,
+   "pct": -0.92
   },
   "USD/VND": {
-   "last": 25705.0,
-   "pct": -0.16
+   "last": 25775.0,
+   "pct": -0.03
   },
   "USD/CNY": {
    "last": 6.65,
-   "pct": -0.18
+   "pct": -0.36
   }
  },
- "watchlist_news": [
-  "SSI: Quỹ đầu tư của SSI bán sạch ACB, VCI, Vinhomes, giảm gần 90% cổ phiếu FPT và nắm gần 40% tài sản bằng tiền mặt",
-  "VPB: VPBank đưa chuẩn mực quản lý gia sản toàn cầu đến với gia đình Việt"
- ],
+ "watchlist_news": [],
  "policy_news": [
-  "Gỡ vướng nợ thuế kéo dài, đẩy nhanh xử lý mã số thuế tồn đọng",
-  "Thủ tục hải quan và chính sách thuế đối với hàng hóa xuất, nhập khẩu qua nền tảng thương mại điện tử",
-  "Phiên 23/11: Khối ngoại tiếp tục bán ròng, bất ngờ tung gần 200 tỷ đồng gom một cổ phiếu HOSE",
-  "Tỷ giá trung tâm lập kỷ lục mới",
-  "Trái phiếu chính phủ lần đầu giảm lãi suất trong năm nay"
+  "Thủ tướng Chính phủ trao Huy hiệu Đảng tặng các Đảng viên lão thành tại Hải Phòng",
+  "CSGT đề nghị 599 chủ phương tiện mang biển số sau khẩn trương nộp phạt nguội theo Nghị định 168",
+  "Thanh tra Chính phủ chỉ rõ loạt bất cập trong quản lý nhà, đất tại Tập đoàn Than - Khoáng sản",
+  "Tất cả người dân có đất đai chú ý thông báo mới nhất từ Chi cục Thuế",
+  "Đơn hàng thương mại điện tử dưới 1 triệu đồng được miễn thuế nhập khẩu"
  ],
  "us_events": [
   "25/11 20:30 Core PCE",
