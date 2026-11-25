@@ -1,25 +1,24 @@
 {
- "generated_at": "2026-11-24T21:39+07:00",
+ "generated_at": "2026-11-26T05:43+07:00",
  "thermometer": {
-  "label": "Trung tính",
-  "score": -1,
+  "label": "Tiêu cực",
+  "score": -2,
   "signals": [
    "-1 VIX > 25 (thị trường toàn cầu sợ hãi)",
-   "-1 Chứng khoán Mỹ giảm mạnh",
-   "+1 Châu Á tăng đồng loạt",
+   "-1 Châu Á giảm đồng loạt",
    "+1 NHNN bơm ròng qua OMO",
    "-1 Xu hướng kỹ thuật giảm (VNI dưới MA20, MA20 dưới MA50)"
   ]
  },
- "ai_view": "Kịch bản: Nghiêng đi ngang đến giảm nhẹ quanh vùng 1.697 điểm, với kháng cự gần tại MA20 khoảng 1.727 điểm và kháng cự xa tại MA50 khoảng 1.746 điểm.\nĐộng lực: Phố Wall giảm và VIX tăng mạnh gây áp lực lên tâm lý, dù việc NHNN bơm ròng qua OMO cùng DXY suy yếu giúp hỗ trợ thanh khoản và tỷ giá.\nDanh mục: Không có tin riêng cho VPB, VPX, TCB, MBB, SSI, nên nhóm ngân hàng hưởng lợi gián tiếp từ thanh khoản hệ thống dồi dào, còn nhóm chứng khoán chịu ảnh hưởng của thanh khoản thị trường đang thấp hơn mức trung bình.\nSai nếu: VN-Index bứt phá và đóng cửa trên MA20 với thanh khoản vượt mức trung bình.",
+ "ai_view": "Kịch bản: Nghiêng giảm hoặc giằng co yếu khi chỉ số nằm dưới cả MA20 (~1.724) và MA50 (~1.744), với 1.700 là vùng cản gần cần vượt qua.\nĐộng lực: Tâm lý châu Á bất ổn khi KOSPI và Nikkei giảm mạnh, VIX tăng, cùng việc khối ngoại bán mạnh và thanh khoản trong nước thấp hơn trung bình.\nDanh mục: Không có tin riêng cho VPB, VPX, TCB, MBB, SSI, nên nhóm ngân hàng chịu áp lực từ bài toán giảm lãi suất, còn nhóm chứng khoán nhạy cảm với thanh khoản suy yếu.\nSai nếu: VN-Index lấy lại 1.700 rồi đóng cửa trên MA20 với thanh khoản cải thiện và khối ngoại ngừng bán ròng.",
  "vnindex": {
-  "last": 1697.14,
-  "pct": 0.49443684531529364,
-  "ma20": 1727.567,
-  "ma50": 1746.2318,
-  "pct5": -2.2885732544951076,
-  "vol_vs_avg": 0.7576991780137455,
-  "date": "2026-11-23"
+  "last": 1687.45,
+  "pct": -0.5709605571726617,
+  "ma20": 1723.846,
+  "ma50": 1743.7578,
+  "pct5": -2.27425407709414,
+  "vol_vs_avg": 0.7496412094978622,
+  "date": "2026-11-25"
  },
  "vn_money_market": {
   "session": "23/11",
@@ -36,74 +35,74 @@
  "foreign_flow_market": null,
  "markets": {
   "DXY": {
-   "last": 103.83,
-   "pct": -0.47
+   "last": 103.69,
+   "pct": -0.11
   },
   "US10Y": {
-   "last": 4.9,
-   "pct": -0.37
-  },
-  "VIX": {
-   "last": 29.36,
-   "pct": 10.29
-  },
-  "S&P 500": {
-   "last": 7154.5,
+   "last": 4.85,
    "pct": -1.14
   },
+  "VIX": {
+   "last": 28.29,
+   "pct": 7.32
+  },
+  "S&P 500": {
+   "last": 7182.78,
+   "pct": -0.25
+  },
   "Nasdaq": {
-   "last": 23631.77,
-   "pct": -1.9
+   "last": 23585.8,
+   "pct": -0.62
   },
   "S&P fut (tối nay)": {
-   "last": 7179.0,
-   "pct": -1.04
+   "last": 7187.5,
+   "pct": -0.42
   },
   "Nikkei": {
-   "last": 58644.63,
-   "pct": 3.91
+   "last": 57011.62,
+   "pct": -2.78
   },
   "KOSPI": {
-   "last": 5006.03,
-   "pct": 6.32
+   "last": 4697.51,
+   "pct": -6.16
   },
   "Hang Seng": {
-   "last": 22219.65,
-   "pct": -0.73
+   "last": 21966.01,
+   "pct": -1.14
   },
   "Brent": {
-   "last": 88.01,
-   "pct": -1.52
+   "last": 90.82,
+   "pct": -0.63
   },
   "WTI": {
-   "last": 81.26,
-   "pct": 1.36
+   "last": 84.15,
+   "pct": 2.56
   },
   "Vàng (HĐTL)": {
-   "last": 3617.9,
-   "pct": -0.92
+   "last": 3617.8,
+   "pct": 1.57
   },
   "USD/VND": {
-   "last": 25775.0,
-   "pct": -0.03
+   "last": 25825.0,
+   "pct": 0.19
   },
   "USD/CNY": {
-   "last": 6.65,
-   "pct": -0.36
+   "last": 6.67,
+   "pct": 0.16
   }
  },
  "watchlist_news": [],
  "policy_news": [
-  "Thủ tướng Chính phủ trao Huy hiệu Đảng tặng các Đảng viên lão thành tại Hải Phòng",
-  "CSGT đề nghị 599 chủ phương tiện mang biển số sau khẩn trương nộp phạt nguội theo Nghị định 168",
-  "Thanh tra Chính phủ chỉ rõ loạt bất cập trong quản lý nhà, đất tại Tập đoàn Than - Khoáng sản",
-  "Tất cả người dân có đất đai chú ý thông báo mới nhất từ Chi cục Thuế",
-  "Đơn hàng thương mại điện tử dưới 1 triệu đồng được miễn thuế nhập khẩu"
+  "VN-Index vượt 1.700 điểm bất thành, khối ngoại bán mạnh",
+  "Khối ngoại giao dịch thoả thuận đột biến một cổ phiếu 4.800 tỷ đồng phiên 25/11",
+  "Phó Thủ tướng Hồ Quốc Dũng dự lễ ra mắt nền tảng AI pháp lý C-Lex",
+  "Ngân hàng và bài toán giảm lãi suất",
+  "Một ngân hàng Việt Nam huy động gần hàng nghìn tỷ với lãi suất chỉ từ 2,9%/năm"
  ],
  "us_events": [
-  "25/11 20:30 Core PCE",
   "04/12 20:30 Non-farm Payrolls",
   "10/12 02:00 Fed công bố lãi suất (FOMC)",
-  "10/12 20:30 CPI Mỹ"
+  "10/12 20:30 CPI Mỹ",
+  "23/12 20:30 Core PCE"
  ]
 }
