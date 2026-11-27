@@ -1,23 +1,25 @@
 {
- "generated_at": "2026-11-27T05:34+07:00",
+ "generated_at": "2026-11-28T05:19+07:00",
  "thermometer": {
   "label": "Trung tính",
-  "score": -1,
+  "score": 1,
   "signals": [
-   "-1 VIX > 25 (thị trường toàn cầu sợ hãi)",
+   "-1 Lợi suất Mỹ tăng mạnh",
+   "+1 Chứng khoán Mỹ tăng mạnh",
+   "+1 Châu Á tăng đồng loạt",
    "+1 NHNN bơm ròng qua OMO",
    "-1 Xu hướng kỹ thuật giảm (VNI dưới MA20, MA20 dưới MA50)"
   ]
  },
- "ai_view": "Kịch bản: Nghiêng đi ngang thận trọng, có thể hồi kỹ thuật sau phiên giảm mạnh nhưng nhiều khả năng bị cản ở vùng MA20 quanh 1.717 điểm, xa hơn là MA50 quanh 1.740 điểm.\nĐộng lực: Khối ngoại tiếp tục bán ròng và tỷ giá USD/VND chịu áp lực là lực cản chính, trong khi VIX hạ nhiệt, lợi suất Mỹ giảm và NHNN bơm ròng qua OMO giúp hạn chế rủi ro bán tháo lan rộng.\nDanh mục: Nhận định \"định giá bị nén sâu\" từ VPBankS hỗ trợ tâm lý cho VPX và nhóm chứng khoán như SSI, nhưng đây chỉ là quan điểm phân tích nên khó tạo lực đẩy bền vững cho VPB, TCB, MBB nếu dòng tiền chưa cải thiện.\nSai nếu: VN-Index đóng cửa vững trên MA20 với thanh khoản cao và khối ngoại quay lại mua ròng, kịch bản sẽ chuyển sang nghiêng tăng; ngược lại, nếu áp lực bán tiếp diễn với thanh khoản lớn, rủi ro nghiêng hẳn về giảm.",
+ "ai_view": "Kịch bản: Nghiêng hồi phục đi ngang, chỉ số có thể kiểm định vùng MA20 quanh 1.712 điểm (xa hơn là MA50 quanh 1.737 điểm), còn vùng 1.654 điểm vừa lấy lại là hỗ trợ gần.\nĐộng lực: Tâm lý rủi ro toàn cầu tích cực (chứng khoán Mỹ, châu Á đồng loạt tăng, VIX hạ nhiệt) cùng tin khối ngoại mua ròng hơn 600 tỷ đồng hỗ trợ, nhưng DXY và lợi suất Mỹ 10 năm tăng vẫn gây áp lực tỷ giá.\nDanh mục: Tin TCB thay đổi nhân sự cấp cao cần theo dõi chi tiết vì có thể tác động ngắn hạn tới tâm lý cổ phiếu, còn các tin tài trợ sự kiện của TCB và truyền thông của MBB hầu như không ảnh hưởng cơ bản.\nSai nếu: Thanh khoản tiếp tục thấp hơn trung bình khiến nhịp hồi không vượt được MA20, hoặc chỉ số mất lại vùng 1.654 điểm khi khối ngoại quay lại bán ròng.",
  "vnindex": {
-  "last": 1629.68,
-  "pct": -3.423508844706513,
-  "ma20": 1716.9975,
-  "ma50": 1740.1492,
-  "pct5": -4.305905426274648,
-  "vol_vs_avg": 1.2692634009342472,
-  "date": "2026-11-26"
+  "last": 1653.9,
+  "pct": 1.4861813362132548,
+  "ma20": 1711.912,
+  "ma50": 1736.7718,
+  "pct5": -2.114084823806528,
+  "vol_vs_avg": 0.8323159108930633,
+  "date": "2026-11-27"
  },
  "vn_money_market": {
   "session": "23/11",
@@ -34,71 +36,73 @@
  "foreign_flow_market": null,
  "markets": {
   "DXY": {
-   "last": 103.78,
-   "pct": 0.11
+   "last": 104.01,
+   "pct": 0.33
   },
   "US10Y": {
-   "last": 4.85,
-   "pct": -1.14
+   "last": 4.94,
+   "pct": 1.82
   },
   "VIX": {
-   "last": 26.8,
-   "pct": -5.27
+   "last": 23.81,
+   "pct": -11.16
   },
   "S&P 500": {
-   "last": 7182.78,
-   "pct": -0.25
+   "last": 7297.49,
+   "pct": 1.6
   },
   "Nasdaq": {
-   "last": 23585.8,
-   "pct": -0.62
+   "last": 24129.5,
+   "pct": 2.31
   },
   "S&P fut (tối nay)": {
-   "last": 7234.5,
-   "pct": 0.54
+   "last": 7308.25,
+   "pct": 1.56
   },
   "Nikkei": {
-   "last": 57499.16,
-   "pct": 0.86
+   "last": 58711.11,
+   "pct": 2.11
   },
   "KOSPI": {
-   "last": 4711.21,
-   "pct": 0.29
+   "last": 4915.68,
+   "pct": 4.34
   },
   "Hang Seng": {
-   "last": 22226.88,
-   "pct": 1.19
+   "last": 22694.77,
+   "pct": 2.11
   },
   "Brent": {
-   "last": 91.73,
-   "pct": -3.04
+   "last": 90.84,
+   "pct": -3.98
   },
   "WTI": {
-   "last": 84.91,
-   "pct": 1.47
+   "last": 83.08,
+   "pct": -0.72
   },
   "Vàng (HĐTL)": {
-   "last": 3593.4,
-   "pct": 1.63
+   "last": 3668.5,
+   "pct": 3.75
   },
   "USD/VND": {
    "last": 25825.0,
-   "pct": 0.19
+   "pct": 0.0
   },
   "USD/CNY": {
-   "last": 6.66,
-   "pct": -0.07
+   "last": 6.65,
+   "pct": -0.15
   }
  },
  "watchlist_news": [
-  "VPX: Giám đốc Phân tích VPBankS: Định giá chứng khoán đang bị nén rất sâu, một cú hích có thể kích hoạt sóng tăng mới"
+  "TCB: Chỉ còn 1 ngày tới St. Petersburg Symphony Night do Techcombank và Masterise Group đồng độc quyền tài trợ",
+  "MBB: MB Group – Kết nối sức mạnh, nâng tầm thị trường chứng khoán Việt Nam.",
+  "TCB: Techcombank thông báo thay đổi nhân sự cấp cao"
  ],
  "policy_news": [
-  "Khối ngoại tiếp đà bán ròng trong ngày VN-Index lao dốc gần 60 điểm, \"xả\" gần 200 tỷ đồng một cổ phiếu Bluechip",
-  "Phó Chủ tịch UBCKNN: Chứng khoán Việt Nam sắp đón thay đổi quan trọng vào đầu năm 2027",
-  "VN-Index giảm sâu hơn 6% từ đầu tháng, bộ đôi cổ phiếu này vẫn tăng giá bằng lần",
-  "Hiện tượng đáng chú ý tại FPT, VCB và BID sau phiên VN-Index giảm sâu gần 60 điểm",
-  "Có nên mở thẻ tín dụng để lấy lượt vào phòng chờ sân bay?"
+  "BIDV được Ngân hàng Nhà nước chấp thuận tăng vốn thêm gần 14.000 tỷ đồng",
+  "Thủ tướng Lào và Phu nhân đến Hà Nội, thăm chính thức Việt Nam và dự các Hội nghị cấp cao CLMV 12, ACMECS 11",
+  "Khối ngoại bất ngờ mua ròng hơn 600 tỷ đồng trong ngày kỷ niệm 30 năm chứng khoán Việt Nam, cổ phiếu nào được “gom” mạnh nhất?",
+  "Vừa huy động 5.218 tỷ đồng trái phiếu với lãi suất lên tới 14,5%/năm, CII bất ngờ đổi phương án phân bổ vốn",
+  "2 lần VN-Index ‘chao đảo’, có lúc thổi bay 36 tỷ USD vốn hoá"
  ],
  "us_events": [
   "04/12 20:30 Non-farm Payrolls",
