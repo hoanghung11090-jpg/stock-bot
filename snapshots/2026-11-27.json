@@ -1,10 +1,10 @@
 {
   "date": "2026-11-27",
-  "generated_at": "2026-11-27T17:07:01+07:00",
+  "generated_at": "2026-11-27T22:32:14+07:00",
   "symbols": {
     "VPB": {
       "symbol": "VPB",
-      "time": "17:07:01",
+      "time": "22:32:14",
       "price": 20050,
       "prev_close": 19700,
       "ceil": 21050,
@@ -22,7 +22,7 @@
     },
     "VPX": {
       "symbol": "VPX",
-      "time": "17:07:01",
+      "time": "22:32:14",
       "price": 14700,
       "prev_close": 14587,
       "ceil": 15600,
@@ -40,7 +40,7 @@
     },
     "TCB": {
       "symbol": "TCB",
-      "time": "17:07:01",
+      "time": "22:32:14",
       "price": 20150,
       "prev_close": 19650,
       "ceil": 21000,
@@ -58,7 +58,7 @@
     },
     "MBB": {
       "symbol": "MBB",
-      "time": "17:07:01",
+      "time": "22:32:14",
       "price": 18200,
       "prev_close": 17700,
       "ceil": 18900,
@@ -76,7 +76,7 @@
     },
     "SSI": {
       "symbol": "SSI",
-      "time": "17:07:01",
+      "time": "22:32:14",
       "price": 18900,
       "prev_close": 18900,
       "ceil": 20200,
